@@ -9,8 +9,7 @@
     <link rel="icon" href="images/sidebar-logo.png" type="image/png">
 
     <!-- FONTS & ICONS -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -31,18 +30,20 @@
             </div>
 
             <nav class="nav-menu" id="main-nav">
+                
+                <!-- 1. ACADEMICS -->
                 <span class="nav-label">Academics</span>
                 <a href="index.html" class="active"><i class="ph ph-squares-four"></i> Home</a>
                 <a href="#" class="protected-link"><i class="ph ph-clock"></i> Timetable</a>
                 <a href="#notes" class="protected-link"><i class="ph ph-folder-open"></i> Notes</a>
 
-                <!-- VIBE SECTION (Social) -->
+                <!-- 2. SOCIAL -->
                 <span class="nav-label">Social</span>
-                <a href="vibe.html" class="protected-link vibe-link"><i class="ph-bold ph-confetti"></i> Vibe <span
-                        class="new-badge">NEW</span></a>
+                <a href="vibe.html" class="protected-link vibe-link"><i class="ph-bold ph-confetti"></i> Vibe <span class="new-badge">NEW</span></a>
                 <a href="#" class="protected-link"><i class="ph ph-users-three"></i> Clubs</a>
                 <a href="#" class="protected-link"><i class="ph ph-calendar-check"></i> Events</a>
 
+                <!-- 3. CAREER & TOOLS -->
                 <span class="nav-label">Career & Tools</span>
                 <a href="ai-solver.html" class="protected-link"><i class="ph ph-magic-wand"></i> AI Solver</a>
                 <a href="#" class="protected-link"><i class="ph ph-door"></i> Room Checker</a>
@@ -50,18 +51,19 @@
                 <a href="#" class="protected-link"><i class="ph ph-briefcase"></i> Placements</a>
                 <a href="#" class="protected-link"><i class="ph ph-rocket-launch"></i> Launchpad</a>
 
+                <!-- 4. UTILITIES -->
                 <span class="nav-label">Utilities</span>
                 <a href="#" class="protected-link"><i class="ph ph-bowl-food"></i> Mess Menu</a>
                 <a href="#" class="protected-link"><i class="ph ph-bus"></i> Transport</a>
                 <a href="admin.html" class="admin-link protected-admin">
-    <i class="ph ph-shield"></i> Admin Dashboard
-</a>
-
+                    <i class="ph ph-shield-check"></i> Admin Dashboard
+                </a>
 
                 <div style="height: 40px;"></div>
             </nav>
 
-            <!-- USER PROFILE (Click to Open RPG Profile) -->
+            <!-- USER PROFILE (Click to Open RPG Profile or Login) -->
+            <!-- FIXED: Added onclick="handleProfileClick()" directly here -->
             <div class="user-profile" id="profile-section" onclick="handleProfileClick()" style="cursor: pointer; user-select: none;">
                 <div class="profile-content guest-view">
                     <div class="guest-icon"><i class="ph ph-user"></i></div>
@@ -71,20 +73,17 @@
                     </div>
                 </div>
                 <div class="profile-content user-view hidden">
-                    <img src="https://ui-avatars.com/api/?name=Student&background=fff&color=000" id="user-avatar"
-                        alt="User">
+                    <img src="https://ui-avatars.com/api/?name=Student&background=fff&color=000" id="user-avatar" alt="User">
                     <div class="user-info">
                         <h4 id="display-name">Student Name</h4>
                         <div class="xp-mini-bar">
                             <div class="xp-fill" style="width: 65%"></div>
                         </div>
                         <p class="micro-info">
-    Roll: <span id="display-roll">0000</span> • 
-    <span id="display-branch">CSE</span> •
-    Role: <span id="display-role">student</span>
-</p>
-
-
+                            Roll: <span id="display-roll">0000</span> • 
+                            <span id="display-branch">CSE</span> •
+                            Role: <span id="display-role">student</span>
+                        </p>
                     </div>
                     <button id="logout-btn" title="Logout"><i class="ph-bold ph-sign-out"></i></button>
                 </div>
@@ -103,8 +102,7 @@
                     </div>
                 </div>
                 <div class="header-right">
-                    <div class="search-box"><i class="ph ph-magnifying-glass"></i><input type="text"
-                            placeholder="Search peers, projects..."></div>
+                    <div class="search-box"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search peers, projects..."></div>
                     <button class="mobile-menu-btn"><i class="ph ph-list"></i></button>
                 </div>
             </header>
@@ -174,8 +172,7 @@
                         </div>
                         <p>Need a Flutter dev for my startup. 10% equity. DM if interested! 🚀</p>
                         <div class="feed-actions">
-                            <button class="action-btn" onclick="attemptDM('Rahul')"><i
-                                    class="ph-bold ph-chat-circle"></i> Connect</button>
+                            <button class="action-btn" onclick="attemptDM('Rahul')"><i class="ph-bold ph-chat-circle"></i> Connect</button>
                         </div>
                     </div>
 
@@ -207,8 +204,7 @@
             <div class="layer-persona">
                 <div class="persona-header">
                     <div class="persona-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Student&background=1FC166&color=fff&size=128"
-                            id="modal-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Student&background=1FC166&color=fff&size=128" id="modal-avatar">
                         <div class="level-badge">LVL 3</div>
                     </div>
                     <div class="persona-details">
@@ -259,8 +255,7 @@
             <div class="layer-career">
                 <h3>💼 Career & Achievements</h3>
                 <ul class="career-list">
-                    <li><i class="ph-fill ph-certificate"></i> <strong>Internship:</strong> SDE Intern at HighRadius
-                    </li>
+                    <li><i class="ph-fill ph-certificate"></i> <strong>Internship:</strong> SDE Intern at HighRadius</li>
                     <li><i class="ph-fill ph-trophy"></i> <strong>Winner:</strong> Smart India Hackathon 2024</li>
                     <li><i class="ph-fill ph-code"></i> <strong>Skills:</strong> React, Node.js, Python, C++</li>
                 </ul>
@@ -281,16 +276,12 @@
                 <p>Enter your KIIT details to access.</p>
             </div>
             <form id="login-form">
-                <div class="input-group"><label>Full Name</label><input type="text" id="inp-name"
-                        placeholder="e.g. Rahul Sharma" required></div>
+                <div class="input-group"><label>Full Name</label><input type="text" id="inp-name" placeholder="e.g. Rahul Sharma" required></div>
                 <div class="row-group">
-                    <div class="input-group"><label>Roll No</label><input type="number" id="inp-roll"
-                            placeholder="2105..." required></div>
-                    <div class="input-group"><label>Section</label><input type="text" id="inp-sec" placeholder="CSE-5"
-                            required></div>
+                    <div class="input-group"><label>Roll No</label><input type="number" id="inp-roll" placeholder="2105..." required></div>
+                    <div class="input-group"><label>Section</label><input type="text" id="inp-sec" placeholder="CSE-5" required></div>
                 </div>
-                <div class="input-group"><label>Official Email ID</label><input type="email" id="inp-email"
-                        placeholder="roll@kiit.ac.in" required><small class="error-text" id="email-error"></small></div>
+                <div class="input-group"><label>Official Email ID</label><input type="email" id="inp-email" placeholder="roll@kiit.ac.in" required><small class="error-text" id="email-error"></small></div>
                 <button type="submit" class="btn-login-submit">Access Dashboard</button>
             </form>
         </div>
