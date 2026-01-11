@@ -225,3 +225,18 @@ checkAuth();
         }
     };
 });
+
+// --- FORCE PROFILE CLICK FUNCTION ---
+window.handleProfileClick = function() {
+    const user = localStorage.getItem("kiit_user");
+    const loginModal = document.getElementById('login-modal');
+    const profileModal = document.getElementById('super-profile-modal');
+
+    if (user) {
+        // If user is logged in, show Profile Card
+        if(profileModal) profileModal.classList.add('show');
+    } else {
+        // If guest, show Login
+        if(loginModal) loginModal.classList.add('show');
+    }
+};
