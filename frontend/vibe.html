@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIIT Vibe | Social</title>
+    <link rel="icon" href="images/sidebar-logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- SIDEBAR (Same as Index) -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="kiit-logo-wrapper"><img src="images/sidebar-logo.png" alt="KIIT"></div>
+                <div class="logo-text"><h2>KIIT ONE</h2></div>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html"><i class="ph ph-arrow-left"></i> Back to Dashboard</a>
+                <div class="vibe-menu-label">VIBE ZONES</div>
+                <a href="#" class="vibe-nav active" onclick="switchTab('feed')"><i class="ph-bold ph-megaphone"></i> Confessions</a>
+                <a href="#" class="vibe-nav" onclick="switchTab('people')"><i class="ph-bold ph-users"></i> People Directory</a>
+                <a href="#" class="vibe-nav" onclick="switchTab('messages')"><i class="ph-bold ph-chat-circle-text"></i> Messages</a>
+                <a href="#" class="vibe-nav" onclick="switchTab('groups')"><i class="ph-bold ph-users-three"></i> Groups</a>
+                <a href="#" class="vibe-nav" onclick="switchTab('voice')"><i class="ph-bold ph-microphone-stage"></i> Voice Rooms</a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content vibe-container">
+            
+            <!-- SECTION 1: CONFESSIONS FEED -->
+            <div id="tab-feed" class="vibe-tab active">
+                <header class="vibe-header">
+                    <h1>Vibe Feed ⚡</h1>
+                    <button class="btn-primary" onclick="openPostModal()"><i class="ph-bold ph-plus"></i> New Post</button>
+                </header>
+                
+                <div class="feed-filters">
+                    <span class="filter-tag active">All</span>
+                    <span class="filter-tag">#Confession</span>
+                    <span class="filter-tag">#Doubt</span>
+                    <span class="filter-tag">#Events</span>
+                    <span class="filter-tag">#Memes</span>
+                </div>
+
+                <div class="feed-stream" id="feed-stream">
+                    <!-- Posts injected by JS -->
+                </div>
+            </div>
+
+            <!-- SECTION 2: PEOPLE DIRECTORY -->
+            <div id="tab-people" class="vibe-tab">
+                <header class="vibe-header">
+                    <h1>Student Directory 🎓</h1>
+                    <div class="search-bar-vibe">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="people-search" placeholder="Search by Skill, Name, Club...">
+                    </div>
+                </header>
+
+                <div class="directory-filters">
+                    <select><option>All Years</option><option>1st Year</option><option>4th Year</option></select>
+                    <select><option>All Branches</option><option>CSE</option><option>CSSE</option><option>IT</option></select>
+                    <select><option>Skills</option><option>Flutter</option><option>AI/ML</option><option>Design</option></select>
+                </div>
+
+                <div class="people-grid" id="people-grid">
+                    <!-- Student Cards injected by JS -->
+                </div>
+            </div>
+
+            <!-- SECTION 3: MESSAGING SYSTEM -->
+            <div id="tab-messages" class="vibe-tab">
+                <div class="chat-interface">
+                    <!-- Chat Sidebar -->
+                    <div class="chat-sidebar">
+                        <div class="chat-tabs">
+                            <button class="active">Personal</button>
+                            <button>Projects</button>
+                            <button>Clubs</button>
+                        </div>
+                        <div class="chat-list" id="chat-list">
+                            <!-- Chats injected JS -->
+                        </div>
+                    </div>
+
+                    <!-- Chat Window -->
+                    <div class="chat-window" id="chat-window">
+                        <div class="chat-empty-state">
+                            <i class="ph-duotone ph-paper-plane-tilt"></i>
+                            <h3>Select a conversation</h3>
+                            <p>Connect with peers, discuss projects, and vibe.</p>
+                        </div>
+                        <!-- Active Chat View (Hidden initially) -->
+                        <div class="active-chat-view" id="active-chat-view" style="display:none;">
+                            <div class="active-chat-header">
+                                <div class="user-info">
+                                    <img src="" id="chat-header-img">
+                                    <div>
+                                        <h4 id="chat-header-name">User</h4>
+                                        <span class="status-indicator">Online</span>
+                                    </div>
+                                </div>
+                                <div class="header-actions">
+                                    <button><i class="ph-bold ph-phone"></i></button>
+                                    <button><i class="ph-bold ph-info"></i></button>
+                                </div>
+                            </div>
+                            <div class="chat-messages-area" id="chat-messages-area"></div>
+                            <div class="chat-input-bar">
+                                <button><i class="ph-bold ph-paperclip"></i></button>
+                                <input type="text" placeholder="Type a message...">
+                                <button class="send-msg-btn"><i class="ph-fill ph-paper-plane-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: STUBS (Voice/Groups) -->
+            <div id="tab-groups" class="vibe-tab">
+                <div class="stub-container">
+                    <i class="ph-duotone ph-users-three"></i>
+                    <h2>Groups Coming Soon</h2>
+                    <p>Join branch, section, and club groups automatically.</p>
+                </div>
+            </div>
+            <div id="tab-voice" class="vibe-tab">
+                <div class="stub-container">
+                    <i class="ph-duotone ph-microphone-stage"></i>
+                    <h2>Voice Rooms</h2>
+                    <p>Study jams, gaming lounges, and club standups.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- POST MODAL -->
+    <div class="modal-overlay" id="post-modal">
+        <div class="modal-box">
+            <h3>Create Post</h3>
+            <textarea id="post-content" placeholder="What's on your mind? (Confession/Doubt/News)" rows="5"></textarea>
+            <div class="modal-actions">
+                <label><input type="checkbox" id="post-anon"> Post Anonymously</label>
+                <button class="btn-primary" onclick="createPost()">Post</button>
+            </div>
+            <button class="close-modal-x" onclick="closePostModal()">✕</button>
+        </div>
+    </div>
+
+    <script src="vibe.js"></script>
+
+   <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("kiit_user"));
+
+    if (!user) {
+        window.location.href = "index.html";
+        alert("Please login to access Vibe");
+        return;
+    }
+
+    // Load the feed automatically when page loads
+    renderFeed();
+});
+</script>
+
+</body>
+</html>

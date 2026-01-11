@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>KIIT ONE | AI Solver</title>
+
+    <!-- FONTS & ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- CSS LINK -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* --- PAGE SPECIFIC STYLES --- */
+        body {
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .chat-layout {
+            display: flex;
+            flex-direction: column;
+            height: 82vh;
+            background: #fff;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #eee;
+            justify-content: space-between;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            background: #F8FAFC;
+            scroll-behavior: smooth;
+        }
+
+        .message-row {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .user-msg-container {
+            align-self: flex-end;
+            max-width: 80%;
+            display: flex;
+            gap: 12px;
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .user .avatar {
+            background: #1F2937
+        }
+
+        .user-bubble {
+            background: #1F2937;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border-top-right-radius: 2px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
+        }
+
+        /* AI Grid */
+        .ai-response-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .model-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .model-card-header {
+            background: #f8fafc;
+            padding: 10px 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #0B3D2E;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .model-card-content {
+            padding: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1e293b;
+            overflow-x: auto;
+            min-height: 60px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #64748B;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: #1FC166;
+        }
+
+        /* Dropdown */
+        .model-selector-container {
+            position: relative;
+        }
+
+        .model-toggle-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #1e293b;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .model-toggle-btn:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .model-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 350px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .model-dropdown.show {
+            display: flex;
+        }
+
+        .dropdown-header {
+            padding: 10px 15px;
+            background: #f8fafc;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .select-actions button {
+            background: none;
+            border: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-all {
+            color: #1FC166;
+            margin-right: 10px;
+        }
+
+        .btn-clear {
+            color: #ef4444;
+        }
+
+        .model-list-scroll {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .model-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            transition: 0.1s;
+            cursor: pointer;
+        }
+
+        .model-option:hover {
+            background: #f1f5f9;
+        }
+
+        .model-option input[type="checkbox"] {
+            accent-color: #1FC166;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .model-option label {
+            font-size: 0.8rem;
+            color: #334155;
+            cursor: pointer;
+            flex: 1;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Input Area */
+        .chat-input-area {
+            padding: 1.5rem;
+            background: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .chat-input:focus {
+            border-color: #1FC166;
+            box-shadow: 0 0 0 3px rgba(31, 193, 102, 0.1);
+        }
+
+        .icon-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            transition: 0.2s;
+        }
+
+        .icon-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .attach-btn {
+            background: #F1F5F9;
+            color: #64748B
+        }
+
+        .attach-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .send-btn {
+            background: #1FC166;
+            color: white
+        }
+
+        /* Previews */
+        #image-preview-container {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            border: 1px solid #eee;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #image-preview {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            display: none;
+        }
+
+        #file-preview-name {
+            font-size: 0.8rem;
+            color: #333;
+            font-weight: 600;
+            display: none;
+        }
+
+        #remove-img {
+            background: red;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        pre {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #d4d4d4;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .ai-response-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="kiit-logo-wrapper"><img src="images/sidebar-logo.png" alt="KIIT"></div>
+                <div class="logo-text">
+                    <h2>KIIT ONE</h2>
+                </div>
+            </div>
+            <div style="padding:0 10px;"><a href="index.html"
+                    style="text-decoration:none; color:white; display:flex; align-items:center; gap:10px; padding:10px; background:rgba(255,255,255,0.1); border-radius:8px;"><i
+                        class="ph ph-arrow-left"></i> Back to Dashboard</a></div>
+            <div class="history-section">
+                <button class="new-chat-btn" id="new-chat-btn"><i class="ph-bold ph-plus"></i> New Chat</button>
+                <div class="history-header">Recent Chats</div>
+                <div id="history-list"></div>
+                <div class="clear-all-container"><button class="clear-all-btn" id="clear-history"><i
+                            class="ph-bold ph-trash"></i> Clear All History</button></div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="welcome-text">
+                    <h1 style="color:white;font-weight:700">AI Solver 🤖</h1>
+                </div>
+            </header>
+
+            <div class="chat-layout">
+                <div class="chat-header">
+                    <div class="header-info" style="display:flex; align-items:center; gap:12px;">
+                        <div class="avatar" style="background:#1FC166"><i class="ph-bold ph-robot"></i></div>
+                        <div>
+                            <h2 style="margin:0;font-size:1rem;font-weight:700;color:#0B3D2E">KIIT Genius Bot</h2><span
+                                id="status-text" style="font-size:0.7rem; color:#64748B;">Multi-Model Arena</span>
+                        </div>
+                    </div>
+
+                    <div class="model-selector-container">
+                        <button class="model-toggle-btn" id="model-btn">
+                            <i class="ph-bold ph-stack"></i> Select Models (<span id="count-display">1</span>) <i
+                                class="ph-bold ph-caret-down"></i>
+                        </button>
+                        <div class="model-dropdown" id="model-dropdown">
+                            <div class="dropdown-header">
+                                <span style="font-weight:600;">Select AI Models</span>
+                                <div class="select-actions">
+                                    <button class="btn-all" id="select-all">Select All</button>
+                                    <button class="btn-clear" id="clear-selection">Clear</button>
+                                </div>
+                            </div>
+                            <div class="model-list-scroll" id="model-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chat-box">
+                    <div class="message-row">
+                        <div class="ai-response-grid">
+                            <div class="model-card" style="border:none; box-shadow:none;">
+                                <div class="model-card-content" style="color:#64748B;">
+                                    <i class="ph-fill ph-info"></i> Compare 30+ AI models instantly! Upload images,
+                                    paste code, or drop text files. 🚀
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="image-preview-container">
+                    <img id="image-preview" src="" alt="Preview">
+                    <span id="file-preview-name"></span>
+                    <button id="remove-img">✕</button>
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="file" id="file-input" accept="image/*,.txt,.js,.py,.html,.css,.md,.json"
+                        style="display:none;">
+                    <button class="icon-btn attach-btn" onclick="document.getElementById('file-input').click()"
+                        title="Attach Image or File"><i class="ph-bold ph-paperclip"></i></button>
+                    <input type="text" id="user-input" class="chat-input"
+                        placeholder="Type or Paste (Ctrl+V) an image..." autocomplete="off">
+                    <button id="send-btn" class="icon-btn send-btn"><i
+                            class="ph-fill ph-paper-plane-right"></i></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /* -----------------------------------------------------------
+           🔴 PASTE YOUR OPENROUTER API KEY HERE
+        ----------------------------------------------------------- */
+        const OPENROUTER_API_KEY = "PASTE_YOUR_OPENROUTER_KEY_HERE";
+
+        // --- COMPLETE MODEL LIST (Unlocked) ---
+        const allModels = [
+            { name: "Grok 4.1 Fast", id: "x-ai/grok-4.1-fast:free", isVision: false },
+            { name: "DeepSeek R1T2 Chimera", id: "tngtech/deepseek-r1t2-chimera:free", isVision: false },
+            { name: "KAT-Coder-Pro V1", id: "kwaipilot/kat-coder-pro:free", isVision: false },
+            { name: "DeepSeek R1T Chimera", id: "tngtech/deepseek-r1t-chimera:free", isVision: false },
+            { name: "GLM 4.5 Air", id: "z-ai/glm-4.5-air:free", isVision: false },
+            { name: "Nemotron Nano 12B VL", id: "nvidia/nemotron-nano-12b-v2-vl:free", isVision: true },
+            { name: "Qwen3 Coder 480B", id: "qwen/qwen3-coder:free", isVision: false },
+            { name: "Gemma 3 27B", id: "google/gemma-3-27b-it:free", isVision: true },
+            { name: "LongCat Flash", id: "meituan/longcat-flash-chat:free", isVision: false },
+            { name: "GPT-OSS 20B", id: "openai/gpt-oss-20b:free", isVision: false },
+            { name: "Llama 3.3 70B", id: "meta-llama/llama-3.3-70b-instruct:free", isVision: false },
+            { name: "Qwen3 235B", id: "qwen/qwen3-235b-a22b:free", isVision: false },
+            { name: "Gemini 2.0 Flash Exp", id: "google/gemini-2.0-flash-exp:free", isVision: true },
+            { name: "Tongyi DeepResearch", id: "alibaba/tongyi-deepresearch-30b-a3b:free", isVision: false },
+            { name: "R1T Chimera", id: "tngtech/tng-r1t-chimera:free", isVision: false },
+            { name: "Dolphin Mistral", id: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free", isVision: false },
+            { name: "Mistral 7B Instruct", id: "mistralai/mistral-7b-instruct:free", isVision: false },
+            { name: "Nemotron Nano 9B", id: "nvidia/nemotron-nano-9b-v2:free", isVision: false },
+            { name: "Hermes 3 405B", id: "nousresearch/hermes-3-llama-3.1-405b:free", isVision: false },
+            { name: "Mistral Small 24B", id: "mistralai/mistral-small-3.1-24b-instruct:free", isVision: false },
+            { name: "Qwen3 4B", id: "qwen/qwen3-4b:free", isVision: false },
+            { name: "Llama 3.2 3B", id: "meta-llama/llama-3.2-3b-instruct:free", isVision: false },
+            { name: "Kimi K2 0711", id: "moonshotai/kimi-k2:free", isVision: false },
+            { name: "Gemma 3 4B", id: "google/gemma-3-4b-it:free", isVision: true },
+            { name: "Gemma 3 12B", id: "google/gemma-3-12b-it:free", isVision: true },
+            { name: "Gemma 3n 2B", id: "google/gemma-3n-e2b-it:free", isVision: false },
+            { name: "Gemma 3n 4B", id: "google/gemma-3n-e4b-it:free", isVision: false },
+            { name: "Amazon Nova 2 Lite", id: "amazon/nova-2-lite-v1:free", isVision: false },
+            { name: "AllenAI Olmo 3", id: "allenai/olmo-3-32b-think:free", isVision: false },
+            { name: "Mistral Devstral", id: "mistralai/devstral-2512:free", isVision: false },
+            { name: "DeepSeek V3.1 Nex", id: "nex-agi/deepseek-v3.1-nex-n1:free", isVision: false }
+        ];
+
+        // --- STATE ---
+        let selectedModelIDs = ["x-ai/grok-4.1-fast:free"]; // Default
+        let currentBase64Image = null;
+        let fileContentText = null; // For text files
+        let chatHistory = [];
+        let currentChatId = Date.now().toString();
+        let currentConversation = [];
+
+        try { chatHistory = JSON.parse(localStorage.getItem('chat_history')) || []; } catch (e) { localStorage.removeItem('chat_history'); }
+
+        // --- DOM ---
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const fileInput = document.getElementById('file-input');
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImage = document.getElementById('image-preview');
+        const previewName = document.getElementById('file-preview-name');
+        const removeImgBtn = document.getElementById('remove-img');
+        const modelBtn = document.getElementById('model-btn');
+        const modelDropdown = document.getElementById('model-dropdown');
+        const modelList = document.getElementById('model-list');
+        const countDisplay = document.getElementById('count-display');
+        const selectAllBtn = document.getElementById('select-all');
+        const clearSelBtn = document.getElementById('clear-selection');
+        const historyList = document.getElementById('history-list');
+        const newChatBtn = document.getElementById('new-chat-btn');
+        const clearHistoryBtn = document.getElementById('clear-history');
+
+        // --- DROPDOWN LOGIC ---
+        function renderDropdown() {
+            modelList.innerHTML = "";
+            allModels.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'model-option';
+                div.onclick = (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        const cb = div.querySelector('input');
+                        cb.checked = !cb.checked;
+                        updateSelection(m.id, cb.checked);
+                    }
+                };
+                const isChecked = selectedModelIDs.includes(m.id) ? 'checked' : '';
+                div.innerHTML = `
+                <input type="checkbox" value="${m.id}" ${isChecked} onchange="updateSelection('${m.id}', this.checked)">
+                <label>
+                    <span>${m.name}</span>
+                    ${m.isVision ? '<span style="color:#1FC166; font-size:0.7em; border:1px solid #1FC166; padding:0 4px; border-radius:4px;">👁️ Vision</span>' : ''}
+                </label>
+            `;
+                modelList.appendChild(div);
+            });
+        }
+
+        function updateSelection(id, isChecked) {
+            if (isChecked) {
+                if (!selectedModelIDs.includes(id)) selectedModelIDs.push(id);
+            } else {
+                selectedModelIDs = selectedModelIDs.filter(mid => mid !== id);
+            }
+            countDisplay.innerText = selectedModelIDs.length;
+        }
+
+        renderDropdown();
+        modelBtn.addEventListener('click', (e) => { e.stopPropagation(); modelDropdown.classList.toggle('show'); });
+        document.addEventListener('click', (e) => { if (!modelBtn.contains(e.target) && !modelDropdown.contains(e.target)) modelDropdown.classList.remove('show'); });
+
+        selectAllBtn.addEventListener('click', () => { selectedModelIDs = allModels.map(m => m.id); renderDropdown(); countDisplay.innerText = selectedModelIDs.length; });
+        clearSelBtn.addEventListener('click', () => { selectedModelIDs = []; renderDropdown(); countDisplay.innerText = 0; });
+
+        // --- FILE & PASTE LOGIC ---
+        // 1. File Upload
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            handleFile(file);
+        });
+
+        // 2. Paste Support
+        document.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    handleFile(file);
+                }
+            }
+        });
+
+        function handleFile(file) {
+            // Image
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    currentBase64Image = ev.target.result;
+                    previewImage.src = ev.target.result;
+                    previewImage.style.display = 'block';
+                    previewName.style.display = 'none';
+                    previewContainer.style.display = 'flex';
+                    fileContentText = null;
+                };
+                reader.readAsDataURL(file);
+            }
+            // Text File (Code/Txt)
+            else {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    fileContentText = `\n\n[Attached File: ${file.name}]\n\`\`\`\n${ev.target.result}\n\`\`\``;
+                    previewImage.style.display = 'none';
+                    previewName.innerText = `📄 ${file.name}`;
+                    previewName.style.display = 'block';
+                    previewContainer.style.display = 'flex';
+                    currentBase64Image = null;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        removeImgBtn.addEventListener('click', () => {
+            fileInput.value = ''; currentBase64Image = null; fileContentText = null; previewContainer.style.display = 'none';
+        });
+
+        // --- SEND LOGIC ---
+        async function sendMessage() {
+            let text = userInput.value.trim();
+            if (!text && !currentBase64Image && !fileContentText) return;
+
+            if (fileContentText) text += fileContentText; // Append file text to prompt
+
+            currentConversation.push({ role: 'user', text: text, img: currentBase64Image });
+
+            // User UI
+            const userRow = document.createElement('div');
+            userRow.className = 'message-row';
+            const imgHTML = currentBase64Image ? `<img src="${currentBase64Image}" style="max-width:150px; border-radius:8px; display:block; margin-bottom:5px;">` : '';
+            userRow.innerHTML = `<div class="user-msg-container"><div class="avatar user"><i class="ph-bold ph-user"></i></div><div class="user-bubble">${imgHTML}${text}</div></div>`;
+            chatBox.appendChild(userRow);
+
+            // Reset Inputs
+            const sendingImage = currentBase64Image;
+            userInput.value = ''; currentBase64Image = null; fileContentText = null; previewContainer.style.display = 'none'; fileInput.value = '';
+
+            // AI Grid
+            const responseRow = document.createElement('div');
+            responseRow.className = 'message-row';
+            const grid = document.createElement('div');
+            grid.className = 'ai-response-grid';
+            responseRow.appendChild(grid);
+            chatBox.appendChild(responseRow);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            if (selectedModelIDs.length === 0) {
+                grid.innerHTML = "<div style='color:red; padding:10px;'>⚠️ Please select at least one model!</div>";
+                return;
+            }
+
+            // Cards Setup
+            const aiResponseData = [];
+            const cardMap = {};
+
+            selectedModelIDs.forEach(modelId => {
+                const modelConfig = allModels.find(m => m.id === modelId);
+                const modelResponseObj = { name: modelConfig.name, text: "" };
+                aiResponseData.push(modelResponseObj);
+
+                const card = document.createElement('div');
+                card.className = 'model-card';
+                card.innerHTML = `
+                <div class="model-card-header">
+                    <div style="display:flex;align-items:center;gap:6px;"><i class="ph-bold ph-robot"></i> ${modelConfig.name}</div>
+                    <button class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText)"><i class="ph-bold ph-copy"></i></button>
+                </div>
+                <div class="model-card-content"><span style="color:#888;">Queued...</span></div>
+            `;
+                grid.appendChild(card);
+
+                cardMap[modelId] = { config: modelConfig, element: card.querySelector('.model-card-content'), dataRef: modelResponseObj };
+            });
+
+            // BATCH PROCESSING (Safe Batch Size = 2)
+            const BATCH_SIZE = 2;
+            const queue = [...selectedModelIDs];
+
+            async function processQueue() {
+                while (queue.length > 0) {
+                    const batch = queue.splice(0, BATCH_SIZE);
+                    const promises = batch.map(modelId => {
+                        const data = cardMap[modelId];
+                        data.element.innerHTML = '<span style="color:#1FC166;">Generating...</span>';
+                        return streamModelResponse(data.config, text, sendingImage, data.element, data.dataRef);
+                    });
+                    await Promise.allSettled(promises);
+                }
+                currentConversation.push({ role: 'ai', models: aiResponseData });
+                saveState();
+            }
+
+            processQueue();
+        }
+
+        async function streamModelResponse(model, text, image, container, dataRef) {
+            if (image && !model.isVision) {
+                container.innerHTML = `<span style="color:#d97706;">⚠️ Image ignored (Text-only)</span><br><br>`;
+                // Continue without image
+            } else {
+                container.innerHTML = "";
+            }
+
+            const messages = [];
+            const contentArray = [];
+            if (text) contentArray.push({ type: "text", text: text });
+            if (image && model.isVision) contentArray.push({ type: "image_url", image_url: { url: image } });
+            messages.push({ role: "user", content: contentArray });
+
+            try {
+                const response = await fetch("http://localhost:5000/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ model: model.id, messages: messages, stream: true })
+                });
+
+                if (!response.ok) throw new Error("API Error");
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const parts = buffer.split('\n');
+                    buffer = parts.pop();
+
+                    for (const part of parts) {
+                        if (part.startsWith('data: ')) {
+                            const dataStr = part.slice(6).trim();
+                            if (dataStr === '[DONE]') break;
+                            try {
+                                const json = JSON.parse(dataStr);
+                                const content = json.choices[0]?.delta?.content || "";
+                                if (content) {
+                                    dataRef.text += content;
+                                    container.innerHTML = marked.parse(dataRef.text);
+                                    // chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll optional
+                                }
+                            } catch (e) { }
+                        }
+                    }
+                }
+            } catch (err) {
+                container.innerHTML += `<br><span style="color:red;">❌ Failed</span>`;
+                dataRef.text = `Error: ${err.message}`;
+            }
+        }
+
+        // --- HISTORY HELPERS ---
+        function renderHistory() {
+            historyList.innerHTML = "";
+            chatHistory.forEach((chat) => {
+                const div = document.createElement('div');
+                div.className = `history-item ${currentChatId === chat.id ? 'active' : ''}`;
+                div.innerHTML = `<span onclick="loadChat('${chat.id}')" style="flex:1;">${chat.title}</span><div class="history-actions"><button class="hist-action-btn" onclick="renameChat('${chat.id}')"><i class="ph-bold ph-pencil-simple"></i></button><button class="hist-action-btn del" onclick="deleteChat('${chat.id}')"><i class="ph-bold ph-trash"></i></button></div>`;
+                historyList.appendChild(div);
+            });
+        }
+
+        window.createNewChat = () => { currentChatId = Date.now().toString(); currentConversation = []; chatBox.innerHTML = `<div class="message-row"><div class="ai-response-grid"><div class="model-card" style="border:none; box-shadow:none;"><div class="model-card-content" style="color:#64748B;"><i class="ph-fill ph-info"></i> Ask me anything!</div></div></div></div>`; renderHistory(); };
+
+        function saveState() {
+            const existingIndex = chatHistory.findIndex(c => c.id === currentChatId);
+            if (currentConversation.length === 0) return;
+            let rawText = currentConversation[0].text || "New Chat";
+            const title = currentConversation[0].role === 'user' ? rawText.substring(0, 20) + "..." : "New Chat";
+            const chatObj = { id: currentChatId, title: title, conversation: currentConversation, date: new Date().toISOString() };
+            if (existingIndex > -1) chatHistory[existingIndex] = chatObj; else chatHistory.unshift(chatObj);
+            if (chatHistory.length > 20) chatHistory.pop();
+            localStorage.setItem('chat_history', JSON.stringify(chatHistory));
+            renderHistory();
+        }
+
+        window.loadChat = (id) => {
+            currentChatId = id;
+            const chat = chatHistory.find(c => c.id === id);
+            if (!chat) return;
+            currentConversation = chat.conversation;
+            chatBox.innerHTML = "";
+            currentConversation.forEach(msg => {
+                if (msg.role === 'user') {
+                    const userRow = document.createElement('div'); userRow.className = 'message-row';
+                    const imgHTML = msg.img ? `<img src="${msg.img}" style="max-width:150px; border-radius:8px;">` : '';
+                    userRow.innerHTML = `<div class="user-msg-container"><div class="avatar user"><i class="ph-bold ph-user"></i></div><div class="user-bubble">${imgHTML}${msg.text}</div></div>`;
+                    chatBox.appendChild(userRow);
+                } else if (msg.role === 'ai') {
+                    const responseRow = document.createElement('div'); responseRow.className = 'message-row';
+                    const grid = document.createElement('div'); grid.className = 'ai-response-grid';
+                    msg.models.forEach(mResponse => {
+                        const card = document.createElement('div'); card.className = 'model-card';
+                        card.innerHTML = `<div class="model-card-header"><div>${mResponse.name}</div><button class="copy-btn"><i class="ph-bold ph-copy"></i></button></div><div class="model-card-content">${marked.parse(mResponse.text)}</div>`;
+                        grid.appendChild(card);
+                    });
+                    responseRow.appendChild(grid); chatBox.appendChild(responseRow);
+                }
+            });
+            renderHistory();
+        };
+
+        window.deleteChat = (id) => { if (confirm("Delete?")) { chatHistory = chatHistory.filter(c => c.id !== id); localStorage.setItem('chat_history', JSON.stringify(chatHistory)); if (currentChatId === id) createNewChat(); renderHistory(); } };
+        window.renameChat = (id) => { const newTitle = prompt("New Name:"); if (newTitle) { chatHistory.find(c => c.id === id).title = newTitle; localStorage.setItem('chat_history', JSON.stringify(chatHistory)); renderHistory(); } };
+        newChatBtn.addEventListener('click', createNewChat);
+        clearHistoryBtn.addEventListener('click', () => { if (confirm("Clear All?")) { chatHistory = []; localStorage.removeItem('chat_history'); createNewChat(); } });
+        renderHistory();
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+    </script>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("kiit_user"));
+
+    if (!user) {
+        window.location.href = "index.html";
+        alert("Please login to access AI Solver");
+    }
+});
+</script>
+
+</body>
+
+</html>
