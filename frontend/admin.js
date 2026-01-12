@@ -1,109 +1,55 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('kiit_token');
-    
-    // Debug: Check if token exists
     if (!token) {
-        console.error("No token found in localStorage");
-        alert('Access Denied: No token found. Please login again.');
+        alert('Please Login as Admin');
         window.location.href = 'index.html';
         return;
     }
-
-    // Load initial data
-    await window.loadData();
+    loadData();
 });
 
-// --- FORCE GLOBAL FUNCTIONS ---
-
-window.loadData = async function() {
+async function loadData() {
     const token = localStorage.getItem('kiit_token');
-    
     try {
-        // 1. Fetch Users
-        const resUsers = await fetch('/api/admin/users', { 
-            headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            } 
-        });
+        const resCourses = await fetch('/api/admin/courses', { headers: { Authorization: `Bearer ${token}` } });
+        const data = await resCourses.json();
+        if(data.success) {
+            renderCourses(data.courses);
+            document.getElementById('total-courses').innerText = data.courses.length;
+        }
         
-        if (resUsers.status === 401 || resUsers.status === 403) {
-            throw new Error("Unauthorized: " + resUsers.statusText);
+        const resUsers = await fetch('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } });
+        const dataU = await resUsers.json();
+        if(dataU.success) {
+            renderUsers(dataU.users);
+            document.getElementById('total-users').innerText = dataU.users.length;
         }
+    } catch(e) { console.log(e); }
+}
 
-        const dataUsers = await resUsers.json();
-        if (dataUsers.success) {
-            window.renderUsers(dataUsers.users);
-            const totalEl = document.getElementById('total-users');
-            if(totalEl) totalEl.innerText = dataUsers.users.length;
-        }
-
-        // 2. Fetch Courses
-        const resCourses = await fetch('/api/admin/courses', { 
-            headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            } 
-        });
-        const dataCourses = await resCourses.json();
-        if (dataCourses.success) {
-            window.renderCourses(dataCourses.courses);
-            const courseEl = document.getElementById('total-courses');
-            if(courseEl) courseEl.innerText = dataCourses.courses.length;
-        }
-    } catch (err) {
-        console.error("Error loading data:", err);
-        // If it fails, don't just alert 'Access Denied', check why
-        if (err.message.includes("Unauthorized")) {
-            alert("Session expired. Please login again.");
-            window.location.href = 'index.html';
-        }
-    }
-};
-
-window.renderUsers = function(users) {
-    const list = document.getElementById('user-list');
-    if(!list) return;
-    list.innerHTML = users.map(user => `
-        <tr>
-            <td>${user.name}</td>
-            <td>${user.email}</td>
-            <td>${user.role}</td>
-            <td><button class="action-btn delete-btn" onclick="deleteUser('${user.id}')">Delete</button></td>
-        </tr>
-    `).join('');
-};
-
-window.deleteUser = async function(id) {
-    if(!confirm("Delete user?")) return;
-    const token = localStorage.getItem('kiit_token');
-    await fetch(`/api/admin/user/${id}/delete`, { 
-        method: 'DELETE', 
-        headers: { 'Authorization': `Bearer ${token}` } 
-    });
-    window.loadData(); 
-};
-
-// --- COURSE FUNCTIONS (FIXED) ---
 window.launchCourse = async function() {
-    const titleInput = document.getElementById('course-title');
-    const catInput = document.getElementById('course-category');
-    
-    const title = titleInput.value;
-    const category = catInput.value;
-
-    if(!title) {
-        alert("Please enter a course title");
-        return;
-    }
+    const title = document.querySelector('input').value;
+    const category = document.querySelector('select').value;
+    if(!title) return;
 
     const token = localStorage.getItem('kiit_token');
-    
-    try {
-        const res = await fetch('/api/admin/courses', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': `Bearer ${token}` 
-            },
-            body: JSON.stringify({ title,
+    await fetch('/api/admin/courses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title, category })
+    });
+    alert("Course Launched!");
+    loadData();
+};
+
+function renderCourses(list) {
+    const el = document.getElementById('course-list');
+    if(!el) return;
+    el.innerHTML = list.map(c => `<tr><td>${c.title}</td><td>${c.category}</td><td>${c.students_enrolled||0}</td><td>Active</td></tr>`).join('');
+}
+
+function renderUsers(list) {
+    const el = document.getElementById('user-list');
+    if(!el) return;
+    el.innerHTML = list.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td><button>Edit</button></td></tr>`).join('');
+}

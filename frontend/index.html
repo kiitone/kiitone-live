@@ -1,36 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KIIT ONE | Official Student Portal</title>
-    <!-- Favicon -->
     <link rel="icon" href="images/sidebar-logo.png" type="image/png">
-
-    <!-- FONTS & ICONS -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
     <div class="app-container">
-
         <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="brand">
-                <div class="kiit-logo-wrapper">
-                    <img src="images/sidebar-logo.png" alt="KIIT Logo">
-                </div>
-                <div class="logo-text">
-                    <h2>KIIT ONE</h2>
-                </div>
+                <div class="kiit-logo-wrapper"><img src="images/sidebar-logo.png" alt="KIIT"></div>
+                <div class="logo-text"><h2>KIIT ONE</h2></div>
             </div>
 
             <nav class="nav-menu" id="main-nav">
-                
                 <!-- 1. ACADEMICS -->
                 <span class="nav-label">Academics</span>
                 <a href="index.html" class="active"><i class="ph ph-squares-four"></i> Home</a>
@@ -55,15 +44,16 @@
                 <span class="nav-label">Utilities</span>
                 <a href="#" class="protected-link"><i class="ph ph-bowl-food"></i> Mess Menu</a>
                 <a href="#" class="protected-link"><i class="ph ph-bus"></i> Transport</a>
+                
+                <!-- ADMIN LINK -->
                 <a href="admin.html" class="admin-link protected-admin">
                     <i class="ph ph-shield-check"></i> Admin Dashboard
                 </a>
-
+                
                 <div style="height: 40px;"></div>
             </nav>
 
-            <!-- USER PROFILE (Click to Open RPG Profile or Login) -->
-            <!-- FIXED: Added onclick="handleProfileClick()" directly here -->
+            <!-- USER PROFILE (BUTTON) -->
             <div class="user-profile" id="profile-section" onclick="handleProfileClick()" style="cursor: pointer; user-select: none;">
                 <div class="profile-content guest-view">
                     <div class="guest-icon"><i class="ph ph-user"></i></div>
@@ -76,38 +66,28 @@
                     <img src="https://ui-avatars.com/api/?name=Student&background=fff&color=000" id="user-avatar" alt="User">
                     <div class="user-info">
                         <h4 id="display-name">Student Name</h4>
-                        <div class="xp-mini-bar">
-                            <div class="xp-fill" style="width: 65%"></div>
-                        </div>
                         <p class="micro-info">
-                            Roll: <span id="display-roll">0000</span> • 
-                            <span id="display-branch">CSE</span> •
-                            Role: <span id="display-role">student</span>
+                            Roll: <span id="display-roll">...</span> • Role: <span id="display-role">student</span>
                         </p>
                     </div>
-                    <button id="logout-btn" title="Logout"><i class="ph-bold ph-sign-out"></i></button>
+                    <button id="logout-btn" onclick="handleLogout(event)" title="Logout"><i class="ph-bold ph-sign-out"></i></button>
                 </div>
             </div>
         </aside>
 
         <!-- MAIN CONTENT -->
         <main class="main-content">
-
-            <!-- HEADER -->
             <header class="top-bar">
                 <div class="header-left-stack">
                     <img src="images/header-logo.png" alt="Kalinga Institute" class="header-logo-img">
-                    <div class="welcome-text">
-                        <h1 id="welcome-msg">Welcome, KIITian 👋</h1>
-                    </div>
+                    <div class="welcome-text"><h1 id="welcome-msg">Welcome, KIITian 👋</h1></div>
                 </div>
                 <div class="header-right">
-                    <div class="search-box"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search peers, projects..."></div>
+                    <div class="search-box"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search peers..."></div>
                     <button class="mobile-menu-btn"><i class="ph ph-list"></i></button>
                 </div>
             </header>
 
-            <!-- HERO SECTION -->
             <section class="hero-banner">
                 <div class="hero-text">
                     <h2><span class="highlight">Launchpad</span> Season 1 is Live 🚀</h2>
@@ -116,178 +96,66 @@
                 <i class="ph-fill ph-rocket-launch hero-bg-icon"></i>
             </section>
 
-            <!-- HYBRID DASHBOARD GRID -->
             <div class="hybrid-layout">
-
-                <!-- LEFT: UTILITY STACK (70%) -->
                 <div class="utility-stack">
-                    <!-- Today's Classes -->
                     <div class="card widget-card">
-                        <div class="card-head">
-                            <h3><i class="ph-fill ph-chalkboard-teacher text-green"></i> Today's Classes</h3>
-                        </div>
+                        <div class="card-head"><h3><i class="ph-fill ph-chalkboard-teacher text-green"></i> Today's Classes</h3></div>
                         <div class="class-list">
-                            <div class="class-item active">
-                                <div class="time">09:00</div>
-                                <div class="info"><strong>Data Structures</strong><span>Room C-201</span></div>
-                            </div>
-                            <div class="class-item">
-                                <div class="time">11:00</div>
-                                <div class="info"><strong>Operating Systems</strong><span>Room C-204</span></div>
-                            </div>
+                            <div class="class-item active"><div class="time">09:00</div><div class="info"><strong>Data Structures</strong><span>Room C-201</span></div></div>
+                            <div class="class-item"><div class="time">11:00</div><div class="info"><strong>Operating Systems</strong><span>Room C-204</span></div></div>
                         </div>
                     </div>
-
-                    <!-- Quick Tools Grid -->
                     <div class="tools-grid">
-                        <div class="card tool-card" onclick="window.location.href='ai-solver.html'">
-                            <i class="ph-fill ph-magic-wand text-purple"></i>
-                            <span>AI Solver</span>
-                        </div>
-                        <div class="card tool-card">
-                            <i class="ph-fill ph-books text-blue"></i>
-                            <span>Notes</span>
-                        </div>
-                        <div class="card tool-card">
-                            <i class="ph-fill ph-bowl-food text-orange"></i>
-                            <span>Mess</span>
-                        </div>
+                        <div class="card tool-card" onclick="window.location.href='ai-solver.html'"><i class="ph-fill ph-magic-wand text-purple"></i><span>AI Solver</span></div>
+                        <div class="card tool-card"><i class="ph-fill ph-books text-blue"></i><span>Notes</span></div>
+                        <div class="card tool-card"><i class="ph-fill ph-bowl-food text-orange"></i><span>Mess</span></div>
                     </div>
                 </div>
-
-                <!-- RIGHT: COMMUNITY FEED (30%) -->
                 <div class="community-feed">
-                    <div class="feed-header">
-                        <h3>Campus Pulse ⚡</h3>
-                        <span class="live-badge">LIVE</span>
-                    </div>
-
+                    <div class="feed-header"><h3>Campus Pulse ⚡</h3><span class="live-badge">LIVE</span></div>
                     <div class="feed-item">
-                        <div class="feed-user">
-                            <img src="https://ui-avatars.com/api/?name=Rahul&background=random" alt="User">
-                            <div>
-                                <strong>Rahul Das</strong>
-                                <span class="badge-founder">Founder</span>
-                            </div>
-                        </div>
-                        <p>Need a Flutter dev for my startup. 10% equity. DM if interested! 🚀</p>
-                        <div class="feed-actions">
-                            <button class="action-btn" onclick="attemptDM('Rahul')"><i class="ph-bold ph-chat-circle"></i> Connect</button>
-                        </div>
+                        <div class="feed-user"><img src="https://ui-avatars.com/api/?name=Rahul&background=random"><div><strong>Rahul Das</strong><span class="badge-founder">Founder</span></div></div>
+                        <p>Need a Flutter dev for my startup. 10% equity. 🚀</p>
+                        <button class="action-btn" onclick="attemptDM('Rahul')">Connect</button>
                     </div>
-
-                    <div class="feed-item">
-                        <div class="feed-user">
-                            <img src="https://ui-avatars.com/api/?name=Sanya&background=random" alt="User">
-                            <div>
-                                <strong>Sanya M.</strong>
-                                <span class="badge-top">Top 1% Coder</span>
-                            </div>
-                        </div>
-                        <p>Just dropped the OS notes for 5th sem. Check resources tab! 📚</p>
-                        <div class="feed-actions">
-                            <button class="action-btn"><i class="ph-bold ph-arrow-fat-up"></i> 45 XP</button>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- SUPER PROFILE MODAL (The 3-Layer Design) -->
-    <div class="modal-overlay" id="super-profile-modal">
-        <div class="profile-card-container">
-            <button class="close-profile-btn" onclick="closeSuperProfile()">✕</button>
-
-            <!-- LAYER 1: PERSONA (RPG Style) -->
-            <div class="layer-persona">
-                <div class="persona-header">
-                    <div class="persona-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Student&background=1FC166&color=fff&size=128" id="modal-avatar">
-                        <div class="level-badge">LVL 3</div>
-                    </div>
-                    <div class="persona-details">
-                        <h2 id="modal-name">Student Name</h2>
-                        <p class="vibe-tagline">"Building the future, one line of code at a time. 💻"</p>
-
-                        <div class="genesis-badge-container">
-                            <span class="genesis-badge">🌟 CampusX Founding 1000</span>
-                        </div>
-
-                        <div class="xp-bar-container">
-                            <div class="xp-info"><span>XP: 4,500</span> <span>Next Lvl: 5,000</span></div>
-                            <div class="xp-track">
-                                <div class="xp-progress" style="width: 85%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="skill-radar-placeholder">
-                    <!-- CSS Simulated Radar Chart -->
-                    <div class="skill-tag" style="top: 10%; left: 50%;">Coding 90</div>
-                    <div class="skill-tag" style="bottom: 10%; left: 20%;">Design 75</div>
-                    <div class="skill-tag" style="bottom: 10%; right: 20%;">Leadership 80</div>
-                    <div class="radar-graphic"></div>
-                </div>
-            </div>
-
-            <!-- LAYER 2: REAL WORK (Portfolio) -->
-            <div class="layer-work">
-                <h3>🚀 Featured Projects</h3>
-                <div class="project-grid">
-                    <div class="project-card">
-                        <div class="project-tag">AI / ML</div>
-                        <h4>Campus Chatbot</h4>
-                        <p>A chatbot using Gemini API to solve engineering doubts.</p>
-                        <div class="project-meta"><span>⭐ 120 XP</span> <span>👥 2 Collabs</span></div>
-                    </div>
-                    <div class="project-card">
-                        <div class="project-tag">Flutter</div>
-                        <h4>Mess Tracker</h4>
-                        <p>Real-time menu tracking app for hostels.</p>
-                        <div class="project-meta"><span>⭐ 85 XP</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- LAYER 3: CAREER (LinkedIn Style) -->
-            <div class="layer-career">
-                <h3>💼 Career & Achievements</h3>
-                <ul class="career-list">
-                    <li><i class="ph-fill ph-certificate"></i> <strong>Internship:</strong> SDE Intern at HighRadius</li>
-                    <li><i class="ph-fill ph-trophy"></i> <strong>Winner:</strong> Smart India Hackathon 2024</li>
-                    <li><i class="ph-fill ph-code"></i> <strong>Skills:</strong> React, Node.js, Python, C++</li>
-                </ul>
-                <button class="download-resume-btn"><i class="ph-bold ph-download"></i> AI Generated Resume</button>
-            </div>
-
-        </div>
     </div>
 
     <!-- LOGIN MODAL -->
     <div class="modal-overlay" id="login-modal">
         <div class="modal-box">
             <div class="modal-header">
-                <div class="kiit-logo-wrapper" style="margin: 0 auto 15px auto; width: 60px; height: 60px;">
-                    <img src="images/sidebar-logo.png" alt="KIIT">
-                </div>
+                <div class="kiit-logo-wrapper" style="margin: 0 auto 15px auto; width: 60px; height: 60px;"><img src="images/sidebar-logo.png"></div>
                 <h2>Student Login</h2>
-                <p>Enter your KIIT details to access.</p>
             </div>
             <form id="login-form">
-                <div class="input-group"><label>Full Name</label><input type="text" id="inp-name" placeholder="e.g. Rahul Sharma" required></div>
+                <div class="input-group"><label>Full Name</label><input type="text" id="inp-name" required></div>
                 <div class="row-group">
-                    <div class="input-group"><label>Roll No / Password</label><input type="text" id="inp-roll" placeholder="2105... (or admin123)" required></div>
-                    <div class="input-group"><label>Section</label><input type="text" id="inp-sec" placeholder="CSE-5" required></div>
+                    <!-- FIXED: type="text" allows admin123 -->
+                    <div class="input-group"><label>Roll No / Password</label><input type="text" id="inp-roll" required></div>
+                    <div class="input-group"><label>Section</label><input type="text" id="inp-sec" required></div>
                 </div>
-                <div class="input-group"><label>Official Email ID</label><input type="email" id="inp-email" placeholder="roll@kiit.ac.in" required><small class="error-text" id="email-error"></small></div>
+                <div class="input-group"><label>Official Email ID</label><input type="email" id="inp-email" required></div>
                 <button type="submit" class="btn-login-submit">Access Dashboard</button>
             </form>
         </div>
     </div>
 
+    <!-- PROFILE MODAL -->
+    <div class="modal-overlay" id="super-profile-modal">
+        <div class="profile-card-container">
+            <button class="close-profile-btn" onclick="closeSuperProfile()">✕</button>
+            <div class="layer-persona">
+                <div class="persona-header">
+                    <div class="persona-avatar"><img id="modal-avatar" src=""></div>
+                    <div class="persona-details"><h2 id="modal-name">User</h2><p>Student @ KIIT</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
-
 </html>

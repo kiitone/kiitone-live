@@ -1,93 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. DOM ELEMENTS ---
-    const modal = document.getElementById('login-modal');
-    const loginForm = document.getElementById('login-form');
-    const closeModalBtn = document.querySelector('.close-modal-x'); // Fixed selector if needed, or check ID
-    const logoutBtn = document.getElementById('logout-btn');
-    const mobileBtn = document.querySelector('.mobile-menu-btn');
-    const sidebar = document.querySelector('.sidebar');
-    const guestView = document.querySelector('.guest-view');
-    const userView = document.querySelector('.user-view');
-    const welcomeMsg = document.getElementById('welcome-msg');
-    const profileModal = document.getElementById('super-profile-modal');
-    const profileSection = document.getElementById('profile-section');
-
-    // --- 2. AUTH STATE CHECK ---
-    let currentUser = null;
-
-    async function checkAuth() {
-        const token = localStorage.getItem("kiit_token");
-        if (!token) return;
-
-        try {
-            const res = await fetch("/api/auth/me", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (data.success) {
-                currentUser = data.user;
-                localStorage.setItem("kiit_user", JSON.stringify(data.user));
-                updateUI(currentUser);
-            } else {
-                // Token invalid
-                localStorage.removeItem("kiit_user");
-                localStorage.removeItem("kiit_token");
-            }
-        } catch (e) {
-            console.error("Auth check failed", e);
-        }
-    }
     checkAuth();
-
-    // --- 3. PROFILE CLICK HANDLER (THE FIX) ---
-    // This attaches the click event directly via JS, which is more reliable than HTML onclick
-    if (profileSection) {
-        profileSection.onclick = function(e) {
-            // Prevent triggering if clicking logout button inside
-            if (e.target.closest('#logout-btn')) return;
-
-            const user = localStorage.getItem("kiit_user");
-            if (user) {
-                // Logged in -> Open Profile Card
-                if(profileModal) profileModal.classList.add('show');
-            } else {
-                // Guest -> Open Login Modal
-                if(modal) modal.classList.add('show');
-            }
-        };
-    }
-
-    // --- 4. LOGIN LOGIC ---
+    
+    // Login Form Logic
+    const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById("inp-email").value;
-            const password = document.getElementById("inp-roll").value; // Using Roll as password for now
             const name = document.getElementById("inp-name").value;
             const roll = document.getElementById("inp-roll").value;
             const section = document.getElementById("inp-sec").value;
-            
-            // Branch logic
-            let branch = "B.Tech";
-            if (section.toUpperCase().includes('CS')) branch = 'CSE';
-            else if (section.toUpperCase().includes('IT')) branch = 'IT';
-            else if (section.toUpperCase().includes('EC')) branch = 'ECE';
+            const email = document.getElementById("inp-email").value;
+            const password = roll; // Roll (or 'admin123') is password
 
-            // 1. Try Login
             try {
+                // 1. Try Login
                 let res = await fetch("/api/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
                 });
                 let data = await res.json();
 
-                // 2. If fail, Register
+                // 2. If fail, Try Register (Student flow)
                 if (!data.success) {
                     res = await fetch("/api/auth/register", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ name, roll, section, branch, email, password })
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ name, roll, section, branch: "CSE", email, password })
                     });
                     data = await res.json();
                 }
@@ -95,66 +32,88 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.success) {
                     localStorage.setItem("kiit_user", JSON.stringify(data.user));
                     localStorage.setItem("kiit_token", data.token);
-                    currentUser = data.user;
-                    updateUI(currentUser);
-                    if(modal) modal.classList.remove('show');
+                    document.getElementById('login-modal').classList.remove('show');
+                    checkAuth(); // Update UI
                 } else {
-                    alert(data.error || "Login failed");
+                    alert(data.error || "Login Failed");
                 }
-            } catch (err) {
-                alert("Server error. Check console.");
-            }
+            } catch (err) { alert("Server error"); }
         });
     }
-
-    // --- 5. UI UPDATER ---
-    function updateUI(user) {
-        if (user) {
-            guestView.classList.add('hidden');
-            userView.classList.remove('hidden');
-            document.getElementById('display-name').textContent = user.name;
-            document.getElementById('display-roll').textContent = user.roll;
-            if(welcomeMsg) welcomeMsg.innerHTML = `Welcome, <span style="opacity:0.9">${user.name.split(' ')[0]}</span> 👋`;
-            
-            // Admin link visibility
-            const adminLink = document.querySelector('.admin-link');
-            if(adminLink) {
-                adminLink.style.display = (user.role === 'admin') ? 'flex' : 'none';
-            }
-        } else {
-            guestView.classList.remove('hidden');
-            userView.classList.add('hidden');
+    
+    // Close modals on clicking outside (Glassmorphism effect)
+    window.onclick = (e) => {
+        if (e.target.classList.contains('modal-overlay')) {
+            e.target.classList.remove('show');
         }
-    }
-
-    // --- 6. LOGOUT ---
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Stop bubbling to profile click
-            localStorage.clear();
-            window.location.reload();
-        });
-    }
-
-    // --- 7. MODAL CLOSERS ---
-    // Close button inside login modal
-    const closeBtns = document.querySelectorAll('.close-modal-x, .btn-close-modal');
-    closeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if(modal) modal.classList.remove('show');
-            if(profileModal) profileModal.classList.remove('show');
-        });
-    });
-
-    // Close Profile Modal (Global function for button inside modal)
-    window.closeSuperProfile = () => {
-        if(profileModal) profileModal.classList.remove('show');
     };
-
-    // --- 8. MOBILE MENU ---
-    if (mobileBtn) {
-        mobileBtn.addEventListener('click', () => {
-            if(sidebar) sidebar.classList.toggle('open');
-        });
-    }
 });
+
+// --- MAIN UI UPDATER ---
+function checkAuth() {
+    const user = JSON.parse(localStorage.getItem("kiit_user"));
+    const guestView = document.querySelector('.guest-view');
+    const userView = document.querySelector('.user-view');
+    const adminLink = document.querySelector('.admin-link');
+
+    if (user) {
+        // User Logged In
+        guestView.classList.add('hidden');
+        userView.classList.remove('hidden');
+        document.getElementById('display-name').innerText = user.name;
+        document.getElementById('display-roll').innerText = user.roll;
+        document.getElementById('display-role').innerText = user.role;
+        document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=1FC166&color=fff`;
+        
+        // Profile Modal Data
+        const modalAvatar = document.getElementById('modal-avatar');
+        if(modalAvatar) modalAvatar.src = `https://ui-avatars.com/api/?name=${user.name}&background=1FC166&color=fff`;
+        const modalName = document.getElementById('modal-name');
+        if(modalName) modalName.innerText = user.name;
+
+        // Admin Link Visibility
+        if(adminLink) {
+            // Show only if role is admin
+            adminLink.style.display = (user.role === 'admin') ? 'flex' : 'none';
+        }
+    } else {
+        // User is Guest
+        guestView.classList.remove('hidden');
+        userView.classList.add('hidden');
+        if(adminLink) adminLink.style.display = 'none';
+    }
+}
+
+// --- GLOBAL FUNCTIONS (Attached to HTML onclicks) ---
+
+// 1. Profile / Guest Click Handler
+window.handleProfileClick = function() {
+    const user = localStorage.getItem("kiit_user");
+    if (user) {
+        document.getElementById('super-profile-modal').classList.add('show');
+    } else {
+        document.getElementById('login-modal').classList.add('show');
+    }
+};
+
+// 2. Logout Handler
+window.handleLogout = function(e) {
+    if(e) e.stopPropagation();
+    localStorage.clear();
+    window.location.reload();
+};
+
+// 3. Close Profile Modal
+window.closeSuperProfile = function() {
+    document.getElementById('super-profile-modal').classList.remove('show');
+};
+
+// 4. Demo DM Button
+window.attemptDM = function(name) {
+    const user = localStorage.getItem("kiit_user");
+    if(!user) {
+        document.getElementById('login-modal').classList.add('show');
+    } else {
+        alert("Connection request sent to " + name);
+    }
+};
