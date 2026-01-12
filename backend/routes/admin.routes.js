@@ -3,42 +3,73 @@ const pool = require("../models/db");
 const authMiddleware = require("../middleware/auth");
 const isAdmin = require("../middleware/isAdmin");
 
-// List all users (GET /api/admin/users)
+// 1. List all users
 router.get("/users", [authMiddleware, isAdmin], async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT id, name, roll, section, branch, email, role FROM users ORDER BY created_at DESC"
-    );
+    const result = await pool.query("SELECT id, name, roll, section, branch, email, role FROM users ORDER BY created_at DESC");
     res.json({ success: true, users: result.rows });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Failed to fetch users" });
+    res.status(500).json({ error: "Server error" });
   }
 });
 
-// Delete user (DELETE /api/admin/user/:id/delete)
+// 2. Delete user
 router.delete("/user/:id/delete", [authMiddleware, isAdmin], async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query("DELETE FROM users WHERE id = $1", [id]);
     res.json({ success: true, message: "User deleted" });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Failed to delete user" });
   }
 });
 
-// Approve/Change role (PUT /api/admin/user/:id/approve) - Example: Sets role to 'admin' (you can make it toggle or param-based)
+// 3. Approve/Promote user
 router.put("/user/:id/approve", [authMiddleware, isAdmin], async (req, res) => {
   try {
     const { id } = req.params;
-    const newRole = 'admin';  // Or req.body.role for flexibility
-    await pool.query("UPDATE users SET role = $1 WHERE id = $2", [newRole, id]);
-    res.json({ success: true, message: "User role updated" });
+    await pool.query("UPDATE users SET role = 'admin' WHERE id = $1", [id]);
+    res.json({ success: true, message: "User promoted" });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Failed to update role" });
   }
+});
+
+// --- NEW: COURSE MANAGEMENT APIs ---
+
+// 4. Create a Course
+router.post("/courses", [authMiddleware, isAdmin], async (req, res) => {
+    try {
+        const { title, category } = req.body;
+        const result = await pool.query(
+            "INSERT INTO courses (title, category) VALUES ($1, $2) RETURNING *",
+            [title, category]
+        );
+        res.json({ success: true, course: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to create course" });
+    }
+});
+
+// 5. Get All Courses
+router.get("/courses", [authMiddleware, isAdmin], async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM courses ORDER BY created_at DESC");
+        res.json({ success: true, courses: result.rows });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch courses" });
+    }
+});
+
+// 6. Delete Course
+router.delete("/courses/:id", [authMiddleware, isAdmin], async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query("DELETE FROM courses WHERE id = $1", [id]);
+        res.json({ success: true, message: "Course deleted" });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to delete course" });
+    }
 });
 
 module.exports = router;
