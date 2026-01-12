@@ -95,7 +95,7 @@ function checkAuth() {
 
 // Helper to simulate dynamic timetable
 function updateTimetable(section) {
-    const container = document.querySelector('.class-list'); // Targets the Today's Classes list
+    const container = document.getElementById('my-timetable-list'); // NEW TARGET ID
     if(!container) return;
 
     let classes = [];
