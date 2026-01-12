@@ -1878,56 +1878,152 @@ textarea:focus {
     color: #999;
 }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-    .hybrid-layout {
-        grid-template-columns: 1fr;
-    }
+/* =========================================
+   RESPONSIVE & LAYOUT FIXES
+   ========================================= */
 
+/* DEFAULT (MOBILE FIRST BEHAVIOR FOR UTILITY STACK) */
+.utility-stack {
+    /* Hidden on mobile by default, toggled via JS */
+    display: none; 
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70vh; /* Slide up from bottom */
+    background: white;
+    z-index: 2000;
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+.utility-stack.open {
+    display: flex; /* Flex column is inherited */
+    flex-direction: column;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* Mobile Toggle Button (Floating Bottom Right) */
+.right-sidebar-toggle {
+    display: none; /* Hidden for guests by default */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #0B3D2E;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    cursor: pointer;
+    z-index: 1001;
+    transition: 0.2s;
+}
+
+.right-sidebar-toggle:active {
+    transform: scale(0.9);
+}
+
+/* Close Button in Mobile Menu */
+.close-sidebar-btn {
+    display: block;
+    align-self: flex-end;
+    background: #f1f5f9;
+    color: #333;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+/* =========================================
+   DESKTOP / LAPTOP OVERRIDES
+   ========================================= */
+@media (min-width: 1025px) {
     .sidebar {
-        display: none;
-        position: absolute;
-        z-index: 1000;
-        height: 100vh;
+        display: flex; /* Always show sidebar on desktop */
     }
-
-    .sidebar.open {
-        display: flex;
-    }
-
+    
     .mobile-menu-btn {
-        display: block;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-    }
-
-    .search-box {
         display: none;
     }
 
-    .chat-interface {
-        flex-direction: column;
+    .right-sidebar-toggle {
+        display: none !important; /* Never show toggle on desktop */
     }
 
-    .chat-sidebar {
+    .close-sidebar-btn {
+        display: none !important; /* No close button on desktop */
+    }
+
+    /* Strict Grid Layout */
+    .hybrid-layout {
+        display: grid;
+        grid-template-columns: 2.5fr 1fr; /* 70% Feed, 30% Timetable */
+        gap: 30px;
+        align-items: start;
+    }
+
+    .utility-stack {
+        display: flex !important; /* Always visible on desktop */
+        position: static; /* NO FLOATING */
+        width: auto;
+        height: auto;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        border-radius: 0;
+        animation: none;
+    }
+
+    /* Center the whole page content */
+    .main-content {
+        max-width: 1400px;
+        margin: 0 auto;
         width: 100%;
-        height: 200px;
-        border-bottom: 1px solid #eee;
     }
+}
 
-    .layer-persona {
-        flex-direction: column;
-        text-align: center;
-    }
+/* --- FIX FOR INVISIBLE MODAL --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 9999 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: 0.3s ease;
+}
 
-    .persona-header {
-        flex-direction: column;
-    }
+.modal-overlay.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: all !important;
+}
 
-    .skill-radar-placeholder {
-        display: none;
-    }
+.user-profile {
+    cursor: pointer !important;
+    user-select: none;
 }
 
 /* --- FIX FOR INVISIBLE MODAL --- */

@@ -55,33 +55,72 @@ function checkAuth() {
     const guestView = document.querySelector('.guest-view');
     const userView = document.querySelector('.user-view');
     const adminLink = document.querySelector('.admin-link');
+    const mobileExtras = document.getElementById('mobile-extras-btn');
 
     if (user) {
-        // User Logged In
+        // --- LOGGED IN ---
         guestView.classList.add('hidden');
         userView.classList.remove('hidden');
+        
         document.getElementById('display-name').innerText = user.name;
         document.getElementById('display-roll').innerText = user.roll;
         document.getElementById('display-role').innerText = user.role;
         document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=1FC166&color=fff`;
         
-        // Profile Modal Data
+        // Modal Data
         const modalAvatar = document.getElementById('modal-avatar');
         if(modalAvatar) modalAvatar.src = `https://ui-avatars.com/api/?name=${user.name}&background=1FC166&color=fff`;
         const modalName = document.getElementById('modal-name');
         if(modalName) modalName.innerText = user.name;
 
-        // Admin Link Visibility
-        if(adminLink) {
-            // Show only if role is admin
-            adminLink.style.display = (user.role === 'admin') ? 'flex' : 'none';
-        }
+        // Show Admin Link?
+        if(adminLink) adminLink.style.display = (user.role === 'admin') ? 'flex' : 'none';
+
+        // Show Mobile Extras Button?
+        if(mobileExtras) mobileExtras.style.display = 'flex';
+
+        // Update Timetable based on Section
+        updateTimetable(user.section || 'A');
+
     } else {
-        // User is Guest
+        // --- GUEST ---
         guestView.classList.remove('hidden');
         userView.classList.add('hidden');
         if(adminLink) adminLink.style.display = 'none';
+        
+        // HIDE Mobile Extras for Guests
+        if(mobileExtras) mobileExtras.style.display = 'none';
     }
+}
+
+// Helper to simulate dynamic timetable
+function updateTimetable(section) {
+    const container = document.querySelector('.class-list'); // Targets the Today's Classes list
+    if(!container) return;
+
+    let classes = [];
+    
+    // Mock Logic for different sections
+    if(section.toUpperCase().includes('A') || section === 'CSE-5') {
+        classes = [
+            { time: '09:00', name: 'Data Structures', room: 'C-201' },
+            { time: '11:00', name: 'Operating Systems', room: 'C-204' }
+        ];
+    } else {
+        // Default / Section B
+        classes = [
+            { time: '10:00', name: 'DBMS Theory', room: 'LH-12' },
+            { time: '02:00', name: 'Java Lab', room: 'Lab-4' }
+        ];
+    }
+
+    // Render logic (keep the active class on first item)
+    container.innerHTML = classes.map((c, i) => `
+        <div class="class-item ${i===0 ? 'active' : ''}">
+            <div class="time">${c.time}</div>
+            <div class="info"><strong>${c.name}</strong><span>Room ${c.room}</span></div>
+        </div>
+    `).join('');
 }
 
 // --- GLOBAL FUNCTIONS (Attached to HTML onclicks) ---
