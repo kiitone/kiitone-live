@@ -1963,3 +1963,56 @@ textarea:focus {
     cursor: pointer; /* Shows hand icon */
     user-select: none; /* Stops text highlighting */
 }
+
+
+
+/* --- DESKTOP LAYOUT FIX (CENTERED & COMPACT) --- */
+@media (min-width: 1025px) {
+    /* Center the main content area */
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+    }
+
+    /* Force all major sections to have a max width */
+    .top-bar, 
+    .hero-banner, 
+    .hybrid-layout, 
+    .course-hero, 
+    .course-layout {
+        width: 100%;
+        max-width: 1100px; /* Perfect reading width */
+    }
+
+    /* Fix the Dashboard Grid Ratio */
+    .hybrid-layout {
+        display: grid;
+        grid-template-columns: 2.5fr 1fr; /* Main content wider, sidebar narrower */
+        gap: 25px;
+    }
+
+    /* Make the Right Sidebar (Utility Stack) look cleaner */
+    .utility-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+/* Fix for Course Card in List */
+.class-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    transition: 0.2s;
+}
+.class-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
