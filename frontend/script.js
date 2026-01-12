@@ -132,17 +132,24 @@ async function loadStudentCourses() {
         if (data.success && data.courses.length > 0) {
             container.innerHTML = data.courses.map(c => `
                 <div class="class-item" style="border-left: 4px solid #1FC166; margin-bottom:8px; cursor:pointer;" 
-                     onclick="openCourse('${c.title}', '${c.price}', '${c.description}', '${c.discount_code}')">
-                    <div class="time" style="color:#1FC166; font-size:1.2rem;">₹${c.price}</div>
+                     onclick="window.location.href='course-details.html?id=${c.id}'">
+                    
+                    <!-- Clean Icon instead of Price -->
+                    <div class="time" style="color:#1FC166; font-size:1.5rem;"><i class="ph-fill ph-arrow-circle-right"></i></div>
+                    
                     <div class="info">
                         <strong>${c.title}</strong>
                         <span>${c.category}</span>
                     </div>
-                    <button style="margin-left:auto; background:#1FC166; color:white; border:none; padding:6px 12px; border-radius:6px;">View</button>
+                    
+                    <!-- Simple Button -->
+                    <button style="margin-left:auto; background:white; border:1px solid #1FC166; color:#1FC166; padding:6px 12px; border-radius:6px;">
+                        Explore
+                    </button>
                 </div>
             `).join('');
         } else {
-            container.innerHTML = '<div style="padding:10px; color:#666;">No active courses yet.</div>';
+            container.innerHTML = '<div style="padding:10px; color:#666;">No active courses. Check back later!</div>';
         }
     } catch (err) { console.error(err); }
 }

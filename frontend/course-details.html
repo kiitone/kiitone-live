@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details | KIIT ONE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* PAGE SPECIFIC STYLES */
+        .course-hero {
+            background: linear-gradient(135deg, #0B3D2E 0%, #1FC166 100%);
+            padding: 60px 40px;
+            border-radius: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(31, 193, 102, 0.3);
+            margin-bottom: 30px;
+        }
+        .hero-badge { background: #FFD700; color: #000; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
+        .course-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        
+        .content-box { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .feature-list li { list-style: none; display: flex; gap: 10px; margin-bottom: 12px; color: #444; }
+        .feature-list i { color: #1FC166; font-size: 1.2rem; }
+
+        /* Sticky Buy Card */
+        .buy-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); position: sticky; top: 20px; border: 1px solid #eee; }
+        .price-tag { font-size: 2.5rem; font-weight: 800; color: #0B3D2E; }
+        .discount-text { text-decoration: line-through; color: #888; font-size: 1.1rem; }
+        .guarantee { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.8rem; color: #666; margin-top: 10px; }
+        
+        /* Floating Blobs for "Wow" Effect */
+        .blob { position: absolute; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .b1 { width: 300px; height: 300px; top: -100px; right: -50px; }
+        .b2 { width: 150px; height: 150px; bottom: -50px; left: 50px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- SIDEBAR (Simplified for Focus) -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="kiit-logo-wrapper"><img src="images/sidebar-logo.png"></div>
+                <div class="logo-text"><h2>KIIT ONE</h2></div>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="active"><i class="ph-bold ph-arrow-left"></i> Back to Home</a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- Loading State -->
+            <div id="loading" style="text-align: center; margin-top: 100px;">Loading Course Data...</div>
+
+            <!-- Dynamic Content -->
+            <div id="course-content" style="display: none;">
+                
+                <!-- 1. CRAZY HERO SECTION -->
+                <div class="course-hero">
+                    <div class="blob b1"></div><div class="blob b2"></div>
+                    <span class="hero-badge" id="c-cat">Category</span>
+                    <h1 id="c-title" style="font-size: 2.5rem; margin: 15px 0;">Course Title</h1>
+                    <p style="opacity: 0.9; max-width: 600px; font-size: 1.1rem;" id="c-desc">Short description...</p>
+                    <div style="margin-top: 20px; display: flex; gap: 20px; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 5px;"><i class="ph-fill ph-star" style="color: #FFD700;"></i> 4.8/5 Rating</div>
+                        <div style="display: flex; align-items: center; gap: 5px;"><i class="ph-fill ph-users"></i> <span id="c-enrolled">0</span> Students</div>
+                        <div style="display: flex; align-items: center; gap: 5px;"><i class="ph-fill ph-globe"></i> English</div>
+                    </div>
+                </div>
+
+                <div class="course-layout">
+                    <!-- LEFT: DETAILS -->
+                    <div>
+                        <div class="content-box">
+                            <h2 style="margin-bottom: 20px;">🔥 What you'll learn</h2>
+                            <ul class="feature-list">
+                                <li><i class="ph-bold ph-check-circle"></i> <span>Master the core concepts from scratch to advanced.</span></li>
+                                <li><i class="ph-bold ph-check-circle"></i> <span>Build 5 Real-world projects for your resume.</span></li>
+                                <li><i class="ph-bold ph-check-circle"></i> <span>Get certified by KIIT Industry Partners.</span></li>
+                                <li><i class="ph-bold ph-check-circle"></i> <span>Lifetime access to course materials and updates.</span></li>
+                            </ul>
+                        </div>
+
+                        <div class="content-box">
+                            <h2 style="margin-bottom: 20px;">📜 Course Description</h2>
+                            <p id="c-long-desc" style="line-height: 1.8; color: #555;">Full description...</p>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: BUY CARD (STICKY) -->
+                    <div>
+                        <div class="buy-card">
+                            <div style="margin-bottom: 15px;">
+                                <span class="price-tag" id="c-price">₹0</span>
+                                <span class="discount-text" id="c-old-price">₹2999</span>
+                                <span style="color: #166534; font-weight: 700; margin-left: 10px;">80% OFF</span>
+                            </div>
+                            
+                            <button class="btn-primary" style="width: 100%; font-size: 1.1rem; padding: 15px;" onclick="startCheckout()">
+                                Buy Now
+                            </button>
+                            <button style="width: 100%; margin-top: 10px; padding: 12px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer;">
+                                Apply Coupon
+                            </button>
+
+                            <div class="guarantee"><i class="ph-bold ph-lock-key"></i> Secure Transaction</div>
+                            <div class="guarantee"><i class="ph-bold ph-arrow-u-up-left"></i> 7-Day Refund Policy</div>
+                        </div>
+
+                        <!-- CRAZY FEATURE: INSTRUCTOR -->
+                        <div class="content-box" style="margin-top: 20px; text-align: center;">
+                            <img src="https://ui-avatars.com/api/?name=Instructor&background=random" style="width: 60px; border-radius: 50%; margin-bottom: 10px;">
+                            <h4>Expert Instructor</h4>
+                            <p style="font-size: 0.8rem; color: #666;">Top rated mentor with 10+ years exp.</p>
+                            <button style="margin-top: 10px; background: none; border: 1px solid #1FC166; color: #1FC166; padding: 5px 15px; border-radius: 20px; cursor: pointer;">View Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- EMBEDDED SCRIPT FOR SPEED ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const courseId = params.get('id');
+
+            if(!courseId) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                // Reuse the same public API
+                const res = await fetch('/api/auth/courses');
+                const data = await res.json();
+                
+                if(data.success) {
+                    const course = data.courses.find(c => c.id === courseId);
+                    if(course) {
+                        // Populate Data
+                        document.getElementById('c-title').innerText = course.title;
+                        document.getElementById('c-cat').innerText = course.category;
+                        document.getElementById('c-desc').innerText = course.description || "Learn this amazing skill today.";
+                        document.getElementById('c-long-desc').innerText = (course.description || "No details.") + " This comprehensive course covers everything you need to know. It includes video lectures, quizzes, and hands-on projects designed to get you job-ready.";
+                        document.getElementById('c-price').innerText = "₹" + course.price;
+                        document.getElementById('c-old-price').innerText = "₹" + (parseInt(course.price) * 2); // Fake original price
+                        document.getElementById('c-enrolled').innerText = course.students_enrolled || 0;
+
+                        // Show page
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('course-content').style.display = 'block';
+                    }
+                }
+            } catch(e) { console.error(e); }
+        });
+
+        function startCheckout() {
+            alert("🚀 Redirecting to Razorpay Secure Gateway...");
+        }
+    </script>
+</body>
+</html>
