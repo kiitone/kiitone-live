@@ -15,28 +15,30 @@
     
     <style>
         /* EXTRA STYLES FOR TOGGLE SIDEBAR */
-        .right-sidebar-toggle { position: fixed; top: 80px; right: 0; background: #0B3D2E; color: white; padding: 10px 15px; border-radius: 20px 0 0 20px; cursor: pointer; z-index: 1001; display: none; }
+        .right-sidebar-toggle { position: fixed; bottom: 20px; right: 20px; background: #0B3D2E; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; z-index: 1001; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: none; }
         .course-price-tag { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
         
         @media (max-width: 1024px) {
-            .right-sidebar-toggle { display: block; }
             .utility-stack { display: none; } /* Hidden by default on mobile */
-            .utility-stack.open { display: flex; position: fixed; top: 0; right: 0; width: 300px; height: 100vh; background: white; z-index: 1000; padding: 20px; overflow-y: auto; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
-            .close-sidebar-btn { display: block !important; margin-bottom: 20px; text-align: right; font-size: 1.5rem; cursor: pointer; }
+            .utility-stack.open { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 60vh; background: white; z-index: 2000; padding: 20px; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); border-radius: 20px 20px 0 0; animation: slideUp 0.3s ease; }
+            .close-sidebar-btn { display: block !important; margin-bottom: 20px; text-align: right; font-size: 1rem; font-weight: 600; cursor: pointer; color: #333; }
         }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+
         <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="brand">
-                <div class="kiit-logo-wrapper"><img src="images/sidebar-logo.png" alt="KIIT"></div>
+                <div class="kiit-logo-wrapper"><img src="images/sidebar-logo.png" alt="KIIT Logo"></div>
                 <div class="logo-text"><h2>KIIT ONE</h2></div>
             </div>
 
             <nav class="nav-menu" id="main-nav">
+                
                 <!-- 1. ACADEMICS -->
                 <span class="nav-label">Academics</span>
                 <a href="index.html" class="active"><i class="ph ph-squares-four"></i> Home</a>
@@ -66,11 +68,11 @@
                 <a href="admin.html" class="admin-link protected-admin">
                     <i class="ph ph-shield-check"></i> Admin Dashboard
                 </a>
-                
+
                 <div style="height: 40px;"></div>
             </nav>
 
-            <!-- USER PROFILE (BUTTON) -->
+            <!-- USER PROFILE (Clickable) -->
             <div class="user-profile" id="profile-section" onclick="handleProfileClick()" style="cursor: pointer; user-select: none;">
                 <div class="profile-content guest-view">
                     <div class="guest-icon"><i class="ph ph-user"></i></div>
@@ -83,8 +85,13 @@
                     <img src="https://ui-avatars.com/api/?name=Student&background=fff&color=000" id="user-avatar" alt="User">
                     <div class="user-info">
                         <h4 id="display-name">Student Name</h4>
+                        <div class="xp-mini-bar">
+                            <div class="xp-fill" style="width: 65%"></div>
+                        </div>
                         <p class="micro-info">
-                            Roll: <span id="display-roll">...</span> • Role: <span id="display-role">student</span>
+                            Roll: <span id="display-roll">...</span> • 
+                            <span id="display-branch">CSE</span> •
+                            Role: <span id="display-role">student</span>
                         </p>
                     </div>
                     <button id="logout-btn" onclick="handleLogout(event)" title="Logout"><i class="ph-bold ph-sign-out"></i></button>
@@ -105,7 +112,7 @@
                 </div>
             </header>
 
-            <!-- RIGHT SIDEBAR TOGGLE (Mobile Only) -->
+            <!-- RIGHT SIDEBAR TOGGLE (Mobile Only - Floating Bottom Right) -->
             <div class="right-sidebar-toggle" id="mobile-extras-btn" onclick="toggleRightSidebar()">
                 <i class="ph-bold ph-calendar-check"></i>
             </div>
@@ -124,9 +131,11 @@
                     
                     <!-- 1. LIVE COURSES GRID -->
                     <div class="card widget-card" style="margin-bottom: 20px;">
-                        <div class="card-head"><h3><i class="ph-fill ph-graduation-cap text-purple"></i> Featured Courses</h3></div>
+                        <div class="card-head">
+                            <h3><i class="ph-fill ph-graduation-cap text-purple"></i> Featured Courses</h3>
+                        </div>
                         <div class="class-list" id="student-course-list">
-                            <div style="padding:10px; text-align:center; color:#888;">Loading...</div>
+                            <div style="padding:10px; text-align:center; color:#888;">Loading courses...</div>
                         </div>
                     </div>
 
@@ -151,6 +160,8 @@
                 <!-- RIGHT SIDEBAR (Tools Only) -->
                 <div class="utility-stack" id="right-sidebar">
                     <div class="close-sidebar-btn" onclick="toggleRightSidebar()">Close ✕</div>
+                    
+                    <!-- Tools Grid -->
                     <div class="tools-grid">
                         <div class="card tool-card" onclick="window.location.href='ai-solver.html'"><i class="ph-fill ph-magic-wand text-purple"></i><span>AI</span></div>
                         <div class="card tool-card"><i class="ph-fill ph-books text-blue"></i><span>Notes</span></div>
@@ -171,7 +182,7 @@
             <form id="login-form">
                 <div class="input-group"><label>Full Name</label><input type="text" id="inp-name" required></div>
                 <div class="row-group">
-                    <!-- FIXED: type="text" allows admin123 -->
+                    <!-- Text type allows admin123 password -->
                     <div class="input-group"><label>Roll No / Password</label><input type="text" id="inp-roll" required></div>
                     <div class="input-group"><label>Section</label><input type="text" id="inp-sec" required></div>
                 </div>
