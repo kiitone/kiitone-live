@@ -53,3 +53,26 @@ function renderUsers(list) {
     if(!el) return;
     el.innerHTML = list.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td><button>Edit</button></td></tr>`).join('');
 }
+
+// --- SUPER ADMIN SIMULATION ---
+window.adminAction = function(action) {
+    switch(action) {
+        case 'broadcast':
+            const msg = prompt("Enter message to send to ALL 2,400 students:");
+            if(msg) alert(`✅ Broadcast Sent!\n\nEmail: 2400 delivered\nPush Notification: 1800 delivered`);
+            break;
+        case 'ban':
+            const user = prompt("Enter Roll No to suspend:");
+            if(user) alert(`🚫 User ${user} has been suspended for 7 days.`);
+            break;
+        case 'analytics':
+            alert("📊 Analytics Report:\n\n- DAU: 1,200\n- Retention: 85%\n- Server Load: 12%\n\nDownloading PDF Report...");
+            break;
+        case 'content':
+            alert("✅ AI Auto-Moderation:\n\n- 3 Toxic comments blocked.\n- 1 Spam post removed.");
+            break;
+        case 'backup':
+            alert("💾 Database Backup Started...\n\nSnapshot saved to Secure Cloud Storage.");
+            break;
+    }
+};

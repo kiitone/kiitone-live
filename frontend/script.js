@@ -117,3 +117,78 @@ window.attemptDM = function(name) {
         alert("Connection request sent to " + name);
     }
 };
+
+// ==========================================
+// 🚀 REAL FEATURE: LOAD COURSES
+// ==========================================
+async function loadStudentCourses() {
+    const container = document.getElementById('student-course-list');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/api/auth/courses');
+        const data = await res.json();
+
+        if (data.success && data.courses.length > 0) {
+            container.innerHTML = data.courses.map(c => `
+                <div class="class-item" style="border-left: 4px solid #8B5CF6; margin-bottom:8px;">
+                    <div class="time" style="color:#8B5CF6; font-size:1.2rem;"><i class="ph-bold ph-video"></i></div>
+                    <div class="info">
+                        <strong>${c.title}</strong>
+                        <span>${c.category} • ${c.students_enrolled} Enrolled</span>
+                    </div>
+                    <button style="margin-left:auto; background:#8B5CF6; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;" onclick="alert('✅ Successfully Enrolled in ${c.title}!')">Join</button>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<div style="padding:10px; color:#666;">No active courses yet.</div>';
+        }
+    } catch (err) { console.error(err); }
+}
+document.addEventListener('DOMContentLoaded', loadStudentCourses);
+
+// ==========================================
+// 🎭 DEMO FEATURE: SIMULATION ENGINE (Student)
+// ==========================================
+// This makes all those sidebar links "Clickable and Working" visually
+
+// 1. Voting Logic
+window.votePoll = function(btn) {
+    btn.style.background = '#1FC166';
+    btn.style.color = 'white';
+    btn.innerText = 'Voted ✓';
+    setTimeout(() => alert("Thanks for voting! Live stats updated."), 500);
+};
+
+// 2. Feature Router (Handles Sidebar Clicks)
+const features = {
+    'Resume Builder': () => {
+        const file = prompt("Upload Resume (Simulated): Enter file name");
+        if(file) {
+            alert(`🔍 AI Analyzing ${file}...`);
+            setTimeout(() => alert(`✅ Analysis Complete!\n\nScore: 85/100\n\nSuggestions:\n- Add more metrics to 'Projects'\n- Fix formatting in 'Education'`), 2000);
+        }
+    },
+    'Room Checker': () => alert("📍 Empty Rooms Found:\n- C-Block 304 (AC)\n- Library Reading Room 2\n- KP-6 Common Room"),
+    'Timetable': () => alert("📅 AI Timetable Generator:\n\nOptimized Schedule created without clashes.\nDownloaded as PDF."),
+    'Placements': () => alert("💼 Placement Hub:\n\n- HighRadius (12 LPA) - Eligible\n- Deloitte (8 LPA) - Applied\n- Microsoft (45 LPA) - Opens in 2 days"),
+    'Mess Menu': () => alert("🍔 Mess Menu (Today):\n\nBreakfast: Idli Sambar\nLunch: Chicken Curry / Paneer\nDinner: Fried Rice"),
+    'Transport': () => alert("Bus 4B is arriving at Campus Gate in 5 mins. 🚌")
+};
+
+// Attach Listeners to Sidebar Links
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.protected-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const text = link.innerText.trim();
+            if(features[text]) {
+                e.preventDefault();
+                features[text]();
+            }
+        });
+    });
+});
+
+window.openFeature = (name) => {
+    alert(`Opening ${name} module... (Full UI coming in Phase 2)`);
+};

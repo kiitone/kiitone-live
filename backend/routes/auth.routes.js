@@ -80,4 +80,15 @@ router.get("/directory", async (req, res) => {
   }
 });
 
+
+// --- NEW: PUBLIC COURSE LIST ---
+router.get("/courses", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM courses ORDER BY created_at DESC");
+    res.json({ success: true, courses: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;

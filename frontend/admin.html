@@ -57,6 +57,33 @@
             <div class="stat-card"><div class="stat-val">₹45k</div><div class="stat-label">Est. Revenue</div></div>
         </div>
 
+        <!-- ADMIN TOOLS GRID (New Features) -->
+        <div class="action-panel">
+            <div class="panel-title" style="margin-bottom:15px;">🛠️ Super Admin Tools</div>
+            <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 0;">
+                <div class="stat-card tool-btn" onclick="adminAction('broadcast')" style="cursor:pointer; text-align:center;">
+                    <div class="stat-val" style="font-size:1.5rem;">📢</div>
+                    <div class="stat-label">Mass Broadcast</div>
+                </div>
+                <div class="stat-card tool-btn" onclick="adminAction('ban')" style="cursor:pointer; text-align:center;">
+                    <div class="stat-val" style="font-size:1.5rem;">🚫</div>
+                    <div class="stat-label">Ban/Suspend</div>
+                </div>
+                <div class="stat-card tool-btn" onclick="adminAction('analytics')" style="cursor:pointer; text-align:center;">
+                    <div class="stat-val" style="font-size:1.5rem;">📊</div>
+                    <div class="stat-label">User Analytics</div>
+                </div>
+                <div class="stat-card tool-btn" onclick="adminAction('content')" style="cursor:pointer; text-align:center;">
+                    <div class="stat-val" style="font-size:1.5rem;">📝</div>
+                    <div class="stat-label">Content Mod</div>
+                </div>
+                <div class="stat-card tool-btn" onclick="adminAction('backup')" style="cursor:pointer; text-align:center;">
+                    <div class="stat-val" style="font-size:1.5rem;">💾</div>
+                    <div class="stat-label">Backup DB</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Course Launcher (REAL) -->
         <div class="action-panel">
             <div class="panel-title">🚀 Launch New Course</div>
