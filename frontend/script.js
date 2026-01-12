@@ -131,13 +131,14 @@ async function loadStudentCourses() {
 
         if (data.success && data.courses.length > 0) {
             container.innerHTML = data.courses.map(c => `
-                <div class="class-item" style="border-left: 4px solid #8B5CF6; margin-bottom:8px;">
-                    <div class="time" style="color:#8B5CF6; font-size:1.2rem;"><i class="ph-bold ph-video"></i></div>
+                <div class="class-item" style="border-left: 4px solid #1FC166; margin-bottom:8px; cursor:pointer;" 
+                     onclick="openCourse('${c.title}', '${c.price}', '${c.description}', '${c.discount_code}')">
+                    <div class="time" style="color:#1FC166; font-size:1.2rem;">₹${c.price}</div>
                     <div class="info">
                         <strong>${c.title}</strong>
-                        <span>${c.category} • ${c.students_enrolled} Enrolled</span>
+                        <span>${c.category}</span>
                     </div>
-                    <button style="margin-left:auto; background:#8B5CF6; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;" onclick="alert('✅ Successfully Enrolled in ${c.title}!')">Join</button>
+                    <button style="margin-left:auto; background:#1FC166; color:white; border:none; padding:6px 12px; border-radius:6px;">View</button>
                 </div>
             `).join('');
         } else {
@@ -191,4 +192,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.openFeature = (name) => {
     alert(`Opening ${name} module... (Full UI coming in Phase 2)`);
+};
+
+// --- TOGGLE RIGHT SIDEBAR (Mobile Fix) ---
+window.toggleRightSidebar = function() {
+    const sidebar = document.getElementById('right-sidebar');
+    sidebar.classList.toggle('open');
+};
+
+// --- COURSE DETAILS LOGIC ---
+window.openCourse = function(title, price, desc, code) {
+    document.getElementById('cd-title').innerText = title;
+    document.getElementById('cd-price').innerText = "₹" + price;
+    document.getElementById('cd-desc').innerText = desc && desc !== 'undefined' ? desc : "No description available.";
+    document.getElementById('cd-coupon').dataset.correctCode = code; // Store code
+    document.getElementById('course-modal').classList.add('show');
+};
+
+window.closeCourseModal = function() {
+    document.getElementById('course-modal').classList.remove('show');
+};
+
+window.applyCoupon = function() {
+    const input = document.getElementById('cd-coupon').value;
+    const correct = document.getElementById('cd-coupon').dataset.correctCode;
+    const msg = document.getElementById('coupon-msg');
+    
+    if(input === correct && correct !== "null" && correct !== "undefined") {
+        msg.style.display = 'block';
+        msg.style.color = 'green';
+        msg.innerText = "✅ Coupon Applied! 20% Off.";
+    } else {
+        msg.style.display = 'block';
+        msg.style.color = 'red';
+        msg.innerText = "❌ Invalid Coupon";
+    }
 };

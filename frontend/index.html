@@ -8,6 +8,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* EXTRA STYLES FOR TOGGLE SIDEBAR */
+        .right-sidebar-toggle { position: fixed; top: 80px; right: 0; background: #0B3D2E; color: white; padding: 10px 15px; border-radius: 20px 0 0 20px; cursor: pointer; z-index: 1001; display: none; }
+        .course-price-tag { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        
+        @media (max-width: 1024px) {
+            .right-sidebar-toggle { display: block; }
+            .utility-stack { display: none; } /* Hidden by default on mobile */
+            .utility-stack.open { display: flex; position: fixed; top: 0; right: 0; width: 300px; height: 100vh; background: white; z-index: 1000; padding: 20px; overflow-y: auto; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+            .close-sidebar-btn { display: block !important; margin-bottom: 20px; text-align: right; font-size: 1.5rem; cursor: pointer; }
+        }
+    </style>
 </head>
 <body>
 
@@ -88,6 +100,9 @@
                 </div>
             </header>
 
+            <!-- RIGHT SIDEBAR TOGGLE (Mobile Only) -->
+            <div class="right-sidebar-toggle" onclick="toggleRightSidebar()"><i class="ph-bold ph-caret-left"></i> Extras</div>
+
             <section class="hero-banner">
                 <div class="hero-text">
                     <h2><span class="highlight">Launchpad</span> Season 1 is Live 🚀</h2>
@@ -97,8 +112,9 @@
             </section>
 
             <div class="hybrid-layout">
-                <div class="utility-stack">
-                    <!-- NEW: LIVE COURSES SECTION -->
+                <div class="utility-stack" id="right-sidebar">
+                    <div class="close-sidebar-btn" style="display:none;" onclick="toggleRightSidebar()">✕</div>
+                    <!-- REAL: LIVE COURSES SECTION -->
                     <div class="card widget-card">
                         <div class="card-head">
                             <h3><i class="ph-fill ph-graduation-cap text-purple"></i> Live Courses</h3>
@@ -169,6 +185,35 @@
                     <div class="persona-avatar"><img id="modal-avatar" src=""></div>
                     <div class="persona-details"><h2 id="modal-name">User</h2><p>Student @ KIIT</p></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COURSE DETAIL MODAL -->
+    <div class="modal-overlay" id="course-modal">
+        <div class="modal-box" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 id="cd-title">Course Title</h2>
+                <span class="course-price-tag" id="cd-price" style="font-size: 1.2rem;">₹0</span>
+            </div>
+            <p id="cd-desc" style="color:#666; line-height:1.6; margin-bottom:20px;">Description goes here...</p>
+            
+            <div class="input-group">
+                <label>Have a Coupon?</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="cd-coupon" placeholder="Enter Code">
+                    <button class="btn-primary" style="width:auto;" onclick="applyCoupon()">Apply</button>
+                </div>
+                <small id="coupon-msg" style="display:none;"></small>
+            </div>
+
+            <div class="row-group" style="margin-top:20px;">
+                <button class="btn-primary" onclick="alert('Proceeding to Razorpay...')">Buy Now</button>
+                <button class="btn-close-modal" style="border:1px solid #ddd; border-radius:10px;" onclick="closeCourseModal()">Close</button>
+            </div>
+            <div style="margin-top:15px; text-align:center;">
+                <a href="#" onclick="alert('Contacting Admin...')" style="color:#666; font-size:0.8rem;">Contact Admin</a> • 
+                <a href="#" onclick="alert('Link Copied!')" style="color:#666; font-size:0.8rem;">Share</a>
             </div>
         </div>
     </div>

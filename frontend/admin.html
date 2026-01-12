@@ -84,17 +84,20 @@
             </div>
         </div>
 
-        <!-- Course Launcher (REAL) -->
+        <!-- Course Launcher (UPGRADED) -->
         <div class="action-panel">
             <div class="panel-title">🚀 Launch New Course</div>
-            <div class="form-grid">
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
                 <input type="text" id="course-title" placeholder="Course Title (e.g. Full Stack Web Dev)">
                 <select id="course-category">
                     <option value="Academics">Academics</option>
                     <option value="Placement">Placement Prep</option>
                     <option value="Skills">Skill Development</option>
                 </select>
-                <button class="btn" onclick="launchCourse()">Publish Live</button>
+                <input type="number" id="course-price" placeholder="Price (₹)">
+                <input type="text" id="course-coupon" placeholder="Discount Code (Optional)">
+                <textarea id="course-desc" placeholder="Course Description..." style="grid-column: span 2; padding:10px; border:1px solid #ddd; border-radius:8px;" rows="3"></textarea>
+                <button class="btn" style="grid-column: span 2;" onclick="launchCourse()">Publish Live</button>
             </div>
         </div>
 

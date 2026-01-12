@@ -27,19 +27,42 @@ async function loadData() {
     } catch(e) { console.log(e); }
 }
 
+// --- COURSE FUNCTIONS (UPGRADED) ---
 window.launchCourse = async function() {
-    const title = document.querySelector('input').value;
-    const category = document.querySelector('select').value;
-    if(!title) return;
+    const title = document.getElementById('course-title').value;
+    const category = document.getElementById('course-category').value;
+    const price = document.getElementById('course-price').value;
+    const discount_code = document.getElementById('course-coupon').value;
+    const description = document.getElementById('course-desc').value;
+
+    if(!title || !price) {
+        alert("Please enter Title and Price");
+        return;
+    }
 
     const token = localStorage.getItem('kiit_token');
-    await fetch('/api/admin/courses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ title, category })
-    });
-    alert("Course Launched!");
-    loadData();
+    
+    try {
+        const res = await fetch('/api/admin/courses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ title, category, price, discount_code, description })
+        });
+        
+        const data = await res.json();
+        if(data.success) {
+            alert("Course Launched! 🚀");
+            // Clear inputs
+            document.getElementById('course-title').value = "";
+            document.getElementById('course-price').value = "";
+            document.getElementById('course-desc').value = "";
+            loadData(); 
+        } else {
+            alert("Failed: " + data.error);
+        }
+    } catch(err) {
+        alert("Server error connecting to database.");
+    }
 };
 
 function renderCourses(list) {

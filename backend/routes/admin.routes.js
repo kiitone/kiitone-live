@@ -37,13 +37,13 @@ router.put("/user/:id/approve", [authMiddleware, isAdmin], async (req, res) => {
 
 // --- NEW: COURSE MANAGEMENT APIs ---
 
-// 4. Create a Course
+// 4. Create a Course (Updated with Price/Desc)
 router.post("/courses", [authMiddleware, isAdmin], async (req, res) => {
     try {
-        const { title, category } = req.body;
+        const { title, category, description, price, discount_code } = req.body;
         const result = await pool.query(
-            "INSERT INTO courses (title, category) VALUES ($1, $2) RETURNING *",
-            [title, category]
+            "INSERT INTO courses (title, category, description, price, discount_code) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [title, category, description, price, discount_code]
         );
         res.json({ success: true, course: result.rows[0] });
     } catch (err) {
