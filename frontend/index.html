@@ -5,21 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KIIT ONE | Official Student Portal</title>
     <link rel="icon" href="images/sidebar-logo.png" type="image/png">
-    
-    <!-- FONTS & ICONS -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- MAIN CSS -->
     <link rel="stylesheet" href="style.css">
-    
     <style>
-        /* EXTRA STYLES FOR TOGGLE SIDEBAR */
         .right-sidebar-toggle { position: fixed; bottom: 20px; right: 20px; background: #0B3D2E; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; z-index: 1001; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: none; }
         .course-price-tag { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
-        
         @media (max-width: 1024px) {
-            .utility-stack { display: none; } /* Hidden by default on mobile */
+            .utility-stack { display: none; }
             .utility-stack.open { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 60vh; background: white; z-index: 2000; padding: 20px; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); border-radius: 20px 20px 0 0; animation: slideUp 0.3s ease; }
             .close-sidebar-btn { display: block !important; margin-bottom: 20px; text-align: right; font-size: 1rem; font-weight: 600; cursor: pointer; color: #333; }
         }
@@ -29,7 +22,6 @@
 <body>
 
     <div class="app-container">
-
         <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="brand">
@@ -38,20 +30,18 @@
             </div>
 
             <nav class="nav-menu" id="main-nav">
-                
-                <!-- 1. ACADEMICS -->
+                <!-- ACADEMICS (Timetable Removed) -->
                 <span class="nav-label">Academics</span>
                 <a href="index.html" class="active"><i class="ph ph-squares-four"></i> Home</a>
-                <a href="#" class="protected-link"><i class="ph ph-clock"></i> Timetable</a>
                 <a href="#notes" class="protected-link"><i class="ph ph-folder-open"></i> Notes</a>
 
-                <!-- 2. SOCIAL -->
+                <!-- SOCIAL -->
                 <span class="nav-label">Social</span>
                 <a href="vibe.html" class="protected-link vibe-link"><i class="ph-bold ph-confetti"></i> Vibe <span class="new-badge">NEW</span></a>
                 <a href="#" class="protected-link"><i class="ph ph-users-three"></i> Clubs</a>
                 <a href="#" class="protected-link"><i class="ph ph-calendar-check"></i> Events</a>
 
-                <!-- 3. CAREER & TOOLS -->
+                <!-- CAREER & TOOLS -->
                 <span class="nav-label">Career & Tools</span>
                 <a href="ai-solver.html" class="protected-link"><i class="ph ph-magic-wand"></i> AI Solver</a>
                 <a href="#" class="protected-link"><i class="ph ph-door"></i> Room Checker</a>
@@ -59,7 +49,7 @@
                 <a href="#" class="protected-link"><i class="ph ph-briefcase"></i> Placements</a>
                 <a href="#" class="protected-link"><i class="ph ph-rocket-launch"></i> Launchpad</a>
 
-                <!-- 4. UTILITIES -->
+                <!-- UTILITIES -->
                 <span class="nav-label">Utilities</span>
                 <a href="#" class="protected-link"><i class="ph ph-bowl-food"></i> Mess Menu</a>
                 <a href="#" class="protected-link"><i class="ph ph-bus"></i> Transport</a>
@@ -68,31 +58,20 @@
                 <a href="admin.html" class="admin-link protected-admin">
                     <i class="ph ph-shield-check"></i> Admin Dashboard
                 </a>
-
                 <div style="height: 40px;"></div>
             </nav>
 
-            <!-- USER PROFILE (Clickable) -->
+            <!-- USER PROFILE -->
             <div class="user-profile" id="profile-section" onclick="handleProfileClick()" style="cursor: pointer; user-select: none;">
                 <div class="profile-content guest-view">
                     <div class="guest-icon"><i class="ph ph-user"></i></div>
-                    <div class="user-info">
-                        <h4>Guest User</h4>
-                        <p>Click to Login</p>
-                    </div>
+                    <div class="user-info"><h4>Guest User</h4><p>Click to Login</p></div>
                 </div>
                 <div class="profile-content user-view hidden">
                     <img src="https://ui-avatars.com/api/?name=Student&background=fff&color=000" id="user-avatar" alt="User">
                     <div class="user-info">
                         <h4 id="display-name">Student Name</h4>
-                        <div class="xp-mini-bar">
-                            <div class="xp-fill" style="width: 65%"></div>
-                        </div>
-                        <p class="micro-info">
-                            Roll: <span id="display-roll">...</span> • 
-                            <span id="display-branch">CSE</span> •
-                            Role: <span id="display-role">student</span>
-                        </p>
+                        <p class="micro-info">Roll: <span id="display-roll">...</span> • Role: <span id="display-role">student</span></p>
                     </div>
                     <button id="logout-btn" onclick="handleLogout(event)" title="Logout"><i class="ph-bold ph-sign-out"></i></button>
                 </div>
@@ -112,7 +91,7 @@
                 </div>
             </header>
 
-        
+            <div class="right-sidebar-toggle" id="mobile-extras-btn" onclick="toggleRightSidebar()"><i class="ph-bold ph-calendar-check"></i></div>
 
             <section class="hero-banner">
                 <div class="hero-text">
@@ -128,7 +107,7 @@
                     <!-- Live Courses -->
                     <div class="card widget-card" style="margin-bottom: 20px;">
                         <div class="card-head"><h3><i class="ph-fill ph-graduation-cap text-purple"></i> Featured Courses</h3></div>
-                        <div class="class-list" id="student-course-list"><div style="padding:10px; color:#888;">Loading...</div></div>
+                        <div class="class-list" id="student-course-list"><div style="padding:10px; text-align:center; color:#888;">Loading...</div></div>
                     </div>
                     
                     <!-- Social Feed -->
@@ -140,7 +119,7 @@
                     </div>
                 </div>
 
-                <!-- RIGHT SIDEBAR (Tools Only) -->
+                <!-- RIGHT SIDEBAR (Tools Only - No Classes) -->
                 <div class="utility-stack" id="right-sidebar">
                     <div class="close-sidebar-btn" onclick="toggleRightSidebar()">Close ✕</div>
                     <div class="tools-grid">
@@ -153,7 +132,7 @@
         </main>
     </div>
 
-    <!-- LOGIN MODAL -->
+    <!-- MODALS -->
     <div class="modal-overlay" id="login-modal">
         <div class="modal-box">
             <div class="modal-header">
@@ -163,7 +142,6 @@
             <form id="login-form">
                 <div class="input-group"><label>Full Name</label><input type="text" id="inp-name" required></div>
                 <div class="row-group">
-                    <!-- Text type allows admin123 password -->
                     <div class="input-group"><label>Roll No / Password</label><input type="text" id="inp-roll" required></div>
                     <div class="input-group"><label>Section</label><input type="text" id="inp-sec" required></div>
                 </div>
@@ -172,16 +150,12 @@
             </form>
         </div>
     </div>
-
-    <!-- PROFILE MODAL -->
+    
     <div class="modal-overlay" id="super-profile-modal">
         <div class="profile-card-container">
             <button class="close-profile-btn" onclick="closeSuperProfile()">✕</button>
             <div class="layer-persona">
-                <div class="persona-header">
-                    <div class="persona-avatar"><img id="modal-avatar" src=""></div>
-                    <div class="persona-details"><h2 id="modal-name">User</h2><p>Student @ KIIT</p></div>
-                </div>
+                <div class="persona-header"><div class="persona-avatar"><img id="modal-avatar" src=""></div><div class="persona-details"><h2 id="modal-name">User</h2><p>Student @ KIIT</p></div></div>
             </div>
         </div>
     </div>
