@@ -240,11 +240,7 @@ window.openFeature = (name) => {
     alert(`Opening ${name} module... (Full UI coming in Phase 2)`);
 };
 
-// --- TOGGLE RIGHT SIDEBAR (Mobile Fix) ---
-window.toggleRightSidebar = function() {
-    const sidebar = document.getElementById('right-sidebar');
-    sidebar.classList.toggle('open');
-};
+
 
 // --- COURSE DETAILS LOGIC ---
 window.openCourse = function(title, price, desc, code) {
