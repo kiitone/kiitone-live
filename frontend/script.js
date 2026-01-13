@@ -79,9 +79,7 @@ function checkAuth() {
         // Show Mobile Extras Button?
         if(mobileExtras) mobileExtras.style.display = 'flex';
 
-        // Update Timetable based on Section
-        updateTimetable(user.section || 'A');
-
+       
     } else {
         // --- GUEST ---
         guestView.classList.remove('hidden');
@@ -93,35 +91,7 @@ function checkAuth() {
     }
 }
 
-// Helper to simulate dynamic timetable
-function updateTimetable(section) {
-    const container = document.getElementById('my-timetable-list'); // NEW TARGET ID
-    if(!container) return;
 
-    let classes = [];
-    
-    // Mock Logic for different sections
-    if(section.toUpperCase().includes('A') || section === 'CSE-5') {
-        classes = [
-            { time: '09:00', name: 'Data Structures', room: 'C-201' },
-            { time: '11:00', name: 'Operating Systems', room: 'C-204' }
-        ];
-    } else {
-        // Default / Section B
-        classes = [
-            { time: '10:00', name: 'DBMS Theory', room: 'LH-12' },
-            { time: '02:00', name: 'Java Lab', room: 'Lab-4' }
-        ];
-    }
-
-    // Render logic (keep the active class on first item)
-    container.innerHTML = classes.map((c, i) => `
-        <div class="class-item ${i===0 ? 'active' : ''}">
-            <div class="time">${c.time}</div>
-            <div class="info"><strong>${c.name}</strong><span>Room ${c.room}</span></div>
-        </div>
-    `).join('');
-}
 
 // --- GLOBAL FUNCTIONS (Attached to HTML onclicks) ---
 
