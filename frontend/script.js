@@ -2,22 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     loadStudentCourses();
     
-    // Login Form Logic
-    const loginForm = document.getElementById('login-form');
-    let isVerifying = false; // Track if we are in OTP mode
+    const authForm = document.getElementById('auth-form');
+    let isRegistering = false; // Default is Login
+    let isVerifying = false;   // OTP Mode
 
-    if (loginForm) {
-        loginForm.addEventListener("submit", async (e) => {
+    if (authForm) {
+        authForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            // Get Values
-            const name = document.getElementById("inp-name").value;
-            const roll = document.getElementById("inp-roll").value;
-            const section = document.getElementById("inp-sec").value;
             const email = document.getElementById("inp-email").value;
-            const password = roll; // Roll is password
-            
-            // --- MODE 1: VERIFY OTP ---
+            const password = document.getElementById("inp-password").value;
+
+            // --- 1. OTP VERIFICATION ---
             if (isVerifying) {
                 const otp = document.getElementById("inp-otp").value;
                 try {
@@ -26,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         body: JSON.stringify({ email, otp })
                     });
                     const data = await res.json();
-                    
                     if (data.success) {
                         alert("✅ Verified! Logging in...");
                         finishLogin(data);
@@ -37,64 +32,70 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // --- MODE 2: LOGIN / REGISTER ---
+            // --- 2. REGISTER FLOW ---
+            if (isRegistering) {
+                const name = document.getElementById("inp-name").value;
+                const roll = document.getElementById("inp-roll-reg").value;
+                const section = document.getElementById("inp-sec").value;
+                
+                try {
+                    const res = await fetch("/api/auth/register", {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ name, roll, section, branch: "CSE", email, password })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        // Switch to OTP Mode
+                        isVerifying = true;
+                        document.getElementById('register-fields').style.display = 'none';
+                        document.getElementById('pass-group').style.display = 'none';
+                        document.getElementById('otp-field').style.display = 'block';
+                        document.getElementById('btn-submit').innerText = "Verify OTP";
+                        alert("✨ OTP Sent! Check your email.");
+                    } else {
+                        alert(data.error);
+                    }
+                } catch (err) { alert("Server error"); }
+                return;
+            }
+
+            // --- 3. LOGIN FLOW ---
             try {
-                // 1. Try Login
-                let res = await fetch("/api/auth/login", {
+                const res = await fetch("/api/auth/login", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
                 });
-                let data = await res.json();
-
+                const data = await res.json();
                 if (data.success) {
-                    // Login Success
                     finishLogin(data);
-                } else if (data.error && data.error.includes("not verified")) {
-                    // User exists but not verified -> Send OTP again (Register flow)
-                    startOtpFlow(name, roll, section, email, password);
                 } else {
-                    // Login Failed (User doesn't exist) -> Try Register
-                    startOtpFlow(name, roll, section, email, password);
+                    alert(data.error);
                 }
             } catch (err) { alert("Server error"); }
         });
     }
 
-    async function startOtpFlow(name, roll, section, email, password) {
-        try {
-            const res = await fetch("/api/auth/register", {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, roll, section, branch: "CSE", email, password })
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                // UI Switch to OTP Mode
-                isVerifying = true;
-                document.getElementById('reg-fields').style.display = 'none';
-                document.getElementById('otp-field').style.display = 'block';
-                document.getElementById('login-title').innerText = "Verify Email";
-                document.getElementById('login-desc').innerText = `OTP sent to ${email}`;
-                document.getElementById('btn-submit').innerText = "Verify & Login";
-                alert("✨ OTP Sent! Check your email.");
-            } else {
-                alert(data.error);
-            }
-        } catch(e) { alert("Could not send OTP"); }
-    }
+    // Tab Switcher
+    window.switchAuthTab = (mode) => {
+        isRegistering = (mode === 'register');
+        document.getElementById('tab-login').classList.toggle('active', !isRegistering);
+        document.getElementById('tab-register').classList.toggle('active', isRegistering);
+        
+        document.getElementById('register-fields').style.display = isRegistering ? 'block' : 'none';
+        document.getElementById('btn-submit').innerText = isRegistering ? 'Get OTP' : 'Login';
+        document.getElementById('modal-title').innerText = isRegistering ? 'Student Register' : 'Student Login';
+        
+        // Reset OTP if switching
+        isVerifying = false;
+        document.getElementById('otp-field').style.display = 'none';
+        document.getElementById('pass-group').style.display = 'block';
+    };
 
     function finishLogin(data) {
         localStorage.setItem("kiit_user", JSON.stringify(data.user));
         localStorage.setItem("kiit_token", data.token);
         document.getElementById('login-modal').classList.remove('show');
-        
-        // Reset Form
-        isVerifying = false;
-        document.getElementById('reg-fields').style.display = 'block';
-        document.getElementById('otp-field').style.display = 'none';
-        document.getElementById('btn-submit').innerText = "Access Dashboard";
-        
-        checkAuth(); // Update UI
+        checkAuth();
     }
     
     // Close modals
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 });
 
-// --- UI UPDATER ---
+// --- UI UPDATER (Same as before) ---
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("kiit_user"));
     const guestView = document.querySelector('.guest-view');
