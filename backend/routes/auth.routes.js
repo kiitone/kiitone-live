@@ -6,13 +6,14 @@ const nodemailer = require("nodemailer");
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
-// --- EMAIL CONFIGURATION ---
-// Replace with your email and the App Password you generated
+// --- EMAIL CONFIGURATION (FIXED) ---
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // Use SSL
     auth: {
-        user: 'kiitone.official@gmail.com', // PUT YOUR GMAIL HERE
-        pass: 'ukku ymvo fduz yfmb' // PUT YOUR 16-CHAR APP PASSWORD HERE
+        user: "kiitone.official@gmail.com", // REPLACE THIS
+        pass: "ukku ymvo fduz yfmb" // REPLACE THIS
     }
 });
 
@@ -21,10 +22,10 @@ router.post("/register", async (req, res) => {
   try {
     const { name, roll, section, branch, email, password } = req.body;
 
-    // Check if user exists
-    const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    // Check if user exists (Email OR Roll)
+    const userCheck = await pool.query("SELECT * FROM users WHERE email = $1 OR roll = $2", [email, roll]);
     if (userCheck.rows.length > 0) {
-        return res.status(400).json({ error: "User already exists. Please login." });
+        return res.status(400).json({ error: "User or Roll Number already exists. Please login." });
     }
 
     // Generate 6-digit OTP
@@ -49,8 +50,12 @@ router.post("/register", async (req, res) => {
     res.json({ success: true, message: "OTP sent to email. Please verify." });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error or Email failed" });
+    console.error("Register Error:", err);
+    // If it's a duplicate key error from DB
+    if (err.code === '23505') {
+        return res.status(400).json({ error: "Email or Roll Number already taken." });
+    }
+    res.status(500).json({ error: "Email failed to send. Check server logs." });
   }
 });
 
@@ -69,16 +74,14 @@ router.post("/verify", async (req, res) => {
         // OTP Matches -> Verify User
         await pool.query("UPDATE users SET is_verified = TRUE, otp = NULL WHERE email = $1", [email]);
 
-        // Generate Token immediately so they are logged in
+        // Generate Token
         const token = jwt.sign(
             { id: user.rows[0].id, email: user.rows[0].email, role: user.rows[0].role },
             JWT_SECRET,
             { expiresIn: "7d" }
         );
 
-        // Remove password from response
         delete user.rows[0].password;
-        
         res.json({ success: true, token, user: user.rows[0] });
 
     } catch (err) {
@@ -86,7 +89,7 @@ router.post("/verify", async (req, res) => {
     }
 });
 
-// 3. LOGIN (Check Verification)
+// 3. LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -96,13 +99,12 @@ router.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
-    // Check Password
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(400).json({ error: "Invalid password" });
 
     // Check Verification
     if (!user.is_verified) {
-        return res.status(400).json({ error: "Account not verified. Please register again to get OTP." });
+        return res.status(400).json({ error: "Account not verified. Register again to get OTP." });
     }
 
     const token = jwt.sign(
@@ -114,7 +116,6 @@ router.post("/login", async (req, res) => {
     delete user.password;
     res.json({ success: true, token, user });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -133,26 +134,18 @@ router.get("/me", authMiddleware, async (req, res) => {
   }
 });
 
-// GET ALL USERS (Directory)
 router.get("/directory", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT id, name, roll, branch, role FROM users ORDER BY name ASC"
-    );
+    const result = await pool.query("SELECT id, name, roll, branch, role FROM users ORDER BY name ASC");
     res.json({ success: true, users: result.rows });
-  } catch (err) {
-    res.status(500).json({ error: "Server error" });
-  }
+  } catch (err) { res.status(500).json({ error: "Server error" }); }
 });
 
-// PUBLIC COURSE LIST
 router.get("/courses", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM courses ORDER BY created_at DESC");
     res.json({ success: true, courses: result.rows });
-  } catch (err) {
-    res.status(500).json({ error: "Server error" });
-  }
+  } catch (err) { res.status(500).json({ error: "Server error" }); }
 });
 
 module.exports = router;
