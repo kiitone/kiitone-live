@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 });
 
-// --- UI UPDATER (Same as before) ---
+// --- UI UPDATER & FUNCTIONS ---
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("kiit_user"));
     const guestView = document.querySelector('.guest-view');
@@ -140,7 +140,6 @@ function checkAuth() {
     }
 }
 
-// --- GLOBAL FUNCTIONS ---
 window.handleProfileClick = function() {
     const user = localStorage.getItem("kiit_user");
     if (user) {
@@ -174,7 +173,6 @@ window.toggleRightSidebar = function() {
     if(sidebar) sidebar.classList.toggle('open');
 };
 
-// --- LOAD COURSES ---
 async function loadStudentCourses() {
     const container = document.getElementById('student-course-list');
     if (!container) return;
@@ -182,7 +180,6 @@ async function loadStudentCourses() {
     try {
         const res = await fetch('/api/auth/courses');
         const data = await res.json();
-
         if (data.success && data.courses.length > 0) {
             container.innerHTML = data.courses.map(c => `
                 <div class="class-item" style="border-left: 4px solid #1FC166; margin-bottom:8px; cursor:pointer;" 
@@ -197,21 +194,3 @@ async function loadStudentCourses() {
         }
     } catch (err) { console.error(err); }
 }
-
-// --- DEMO FEATURE SIMULATION ---
-const features = {
-    'Resume Builder': () => alert("🔍 AI Analyzing Resume..."),
-    'Room Checker': () => alert("📍 Empty Rooms Found:\n- C-Block 304\n- Library Room 2"),
-    'Placements': () => alert("💼 3 New Companies Visiting:\n- Microsoft (45 LPA)\n- Deloitte (8 LPA)"),
-    'Mess Menu': () => alert("🍔 Mess Menu (Today):\nLunch: Chicken/Paneer\nDinner: Fried Rice"),
-    'Transport': () => alert("Bus 4B Arriving in 5 mins 🚌")
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.protected-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            const text = link.innerText.trim();
-            if(features[text]) { e.preventDefault(); features[text](); }
-        });
-    });
-});

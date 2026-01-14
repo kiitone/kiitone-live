@@ -2117,7 +2117,7 @@ textarea:focus {
 }
 
 
-/* Auth Tabs */
+/* Auth Tabs Styles */
 .tab-btn {
     background: none;
     border: none;
@@ -2127,6 +2127,7 @@ textarea:focus {
     color: #888;
     cursor: pointer;
     border-bottom: 2px solid transparent;
+    transition: 0.2s;
 }
 .tab-btn.active {
     color: #1FC166;
