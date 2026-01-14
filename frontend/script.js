@@ -4,40 +4,97 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Login Form Logic
     const loginForm = document.getElementById('login-form');
+    let isVerifying = false; // Track if we are in OTP mode
+
     if (loginForm) {
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+
+            // Get Values
             const name = document.getElementById("inp-name").value;
             const roll = document.getElementById("inp-roll").value;
             const section = document.getElementById("inp-sec").value;
             const email = document.getElementById("inp-email").value;
-            const password = roll; 
+            const password = roll; // Roll is password
+            
+            // --- MODE 1: VERIFY OTP ---
+            if (isVerifying) {
+                const otp = document.getElementById("inp-otp").value;
+                try {
+                    const res = await fetch("/api/auth/verify", {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, otp })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        alert("✅ Verified! Logging in...");
+                        finishLogin(data);
+                    } else {
+                        alert("❌ " + data.error);
+                    }
+                } catch (err) { alert("Server error"); }
+                return;
+            }
 
+            // --- MODE 2: LOGIN / REGISTER ---
             try {
+                // 1. Try Login
                 let res = await fetch("/api/auth/login", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
                 });
                 let data = await res.json();
 
-                if (!data.success) {
-                    res = await fetch("/api/auth/register", {
-                        method: "POST", headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ name, roll, section, branch: "CSE", email, password })
-                    });
-                    data = await res.json();
-                }
-
                 if (data.success) {
-                    localStorage.setItem("kiit_user", JSON.stringify(data.user));
-                    localStorage.setItem("kiit_token", data.token);
-                    document.getElementById('login-modal').classList.remove('show');
-                    checkAuth();
+                    // Login Success
+                    finishLogin(data);
+                } else if (data.error && data.error.includes("not verified")) {
+                    // User exists but not verified -> Send OTP again (Register flow)
+                    startOtpFlow(name, roll, section, email, password);
                 } else {
-                    alert(data.error || "Login Failed");
+                    // Login Failed (User doesn't exist) -> Try Register
+                    startOtpFlow(name, roll, section, email, password);
                 }
             } catch (err) { alert("Server error"); }
         });
+    }
+
+    async function startOtpFlow(name, roll, section, email, password) {
+        try {
+            const res = await fetch("/api/auth/register", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, roll, section, branch: "CSE", email, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                // UI Switch to OTP Mode
+                isVerifying = true;
+                document.getElementById('reg-fields').style.display = 'none';
+                document.getElementById('otp-field').style.display = 'block';
+                document.getElementById('login-title').innerText = "Verify Email";
+                document.getElementById('login-desc').innerText = `OTP sent to ${email}`;
+                document.getElementById('btn-submit').innerText = "Verify & Login";
+                alert("✨ OTP Sent! Check your email.");
+            } else {
+                alert(data.error);
+            }
+        } catch(e) { alert("Could not send OTP"); }
+    }
+
+    function finishLogin(data) {
+        localStorage.setItem("kiit_user", JSON.stringify(data.user));
+        localStorage.setItem("kiit_token", data.token);
+        document.getElementById('login-modal').classList.remove('show');
+        
+        // Reset Form
+        isVerifying = false;
+        document.getElementById('reg-fields').style.display = 'block';
+        document.getElementById('otp-field').style.display = 'none';
+        document.getElementById('btn-submit').innerText = "Access Dashboard";
+        
+        checkAuth(); // Update UI
     }
     
     // Close modals
@@ -48,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 });
 
+// --- UI UPDATER ---
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("kiit_user"));
     const guestView = document.querySelector('.guest-view');
@@ -82,7 +140,6 @@ function checkAuth() {
 }
 
 // --- GLOBAL FUNCTIONS ---
-
 window.handleProfileClick = function() {
     const user = localStorage.getItem("kiit_user");
     if (user) {
@@ -129,7 +186,7 @@ async function loadStudentCourses() {
             container.innerHTML = data.courses.map(c => `
                 <div class="class-item" style="border-left: 4px solid #1FC166; margin-bottom:8px; cursor:pointer;" 
                      onclick="window.location.href='course-details.html?id=${c.id}'">
-                    <div class="time" style="color:#1FC166; font-size:1.5rem;"><i class="ph-fill ph-arrow-circle-right"></i></div>
+                    <div class="time" style="color:#1FC166; font-size:1.5rem;"><i class="ph-bold ph-arrow-circle-right"></i></div>
                     <div class="info"><strong>${c.title}</strong><span>${c.category}</span></div>
                     <button style="margin-left:auto; background:white; border:1px solid #1FC166; color:#1FC166; padding:6px 12px; border-radius:6px;">Explore</button>
                 </div>

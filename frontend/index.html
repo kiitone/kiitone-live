@@ -165,16 +165,29 @@
         <div class="modal-box">
             <div class="modal-header">
                 <div class="kiit-logo-wrapper" style="margin: 0 auto 15px auto; width: 60px; height: 60px;"><img src="images/sidebar-logo.png"></div>
-                <h2>Student Login</h2>
+                <h2 id="login-title">Student Login</h2>
+                <p id="login-desc" style="font-size: 0.9rem; color: #666;">Enter details to access.</p>
             </div>
             <form id="login-form">
-                <div class="input-group"><label>Full Name</label><input type="text" id="inp-name" required></div>
-                <div class="row-group">
-                    <div class="input-group"><label>Roll No / Password</label><input type="text" id="inp-roll" required></div>
-                    <div class="input-group"><label>Section</label><input type="text" id="inp-sec" required></div>
+                <!-- NORMAL FIELDS -->
+                <div id="reg-fields">
+                    <div class="input-group"><label>Full Name</label><input type="text" id="inp-name" required></div>
+                    <div class="row-group">
+                        <div class="input-group"><label>Roll No / Password</label><input type="text" id="inp-roll" required></div>
+                        <div class="input-group"><label>Section</label><input type="text" id="inp-sec" required></div>
+                    </div>
+                    <div class="input-group"><label>Official Email ID</label><input type="email" id="inp-email" required></div>
                 </div>
-                <div class="input-group"><label>Official Email ID</label><input type="email" id="inp-email" required></div>
-                <button type="submit" class="btn-login-submit">Access Dashboard</button>
+
+                <!-- OTP FIELD (Hidden by default) -->
+                <div id="otp-field" style="display: none; margin-bottom: 15px;">
+                    <div class="input-group">
+                        <label style="color: #1FC166; font-weight: bold;">Enter OTP sent to your Email</label>
+                        <input type="text" id="inp-otp" placeholder="Ex: 123456" style="letter-spacing: 5px; text-align: center; font-size: 1.2rem;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login-submit" id="btn-submit">Access Dashboard</button>
             </form>
         </div>
     </div>
