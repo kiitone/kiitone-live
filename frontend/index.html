@@ -40,10 +40,14 @@
     <div class="app-container">
 
         <!-- SIDEBAR -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="left-sidebar">
             <div class="brand">
-                <div class="kiit-logo-wrapper"><img src="images/sidebar-logo.png" alt="KIIT Logo"></div>
-                <div class="logo-text"><h2>KIIT ONE</h2></div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="kiit-logo-wrapper"><img src="images/sidebar-logo.png" alt="KIIT Logo"></div>
+                    <div class="logo-text"><h2>KIIT ONE</h2></div>
+                </div>
+                <!-- CLOSE BUTTON (Mobile Only) -->
+                <div class="sidebar-close-btn" onclick="toggleLeftSidebar()">✕</div>
             </div>
 
             <nav class="nav-menu" id="main-nav">
@@ -108,10 +112,16 @@
         <!-- MAIN CONTENT -->
         <main class="main-content">
             <header class="top-bar">
-                <div class="header-left-stack">
+                <div class="header-left-stack" style="display:flex; align-items:center; gap:10px;">
+                    <!-- HAMBURGER MENU (Mobile Only) -->
+                    <button class="mobile-menu-toggle" onclick="toggleLeftSidebar()">
+                        <i class="ph-bold ph-list"></i>
+                    </button>
+
                     <img src="images/header-logo.png" alt="Kalinga Institute" class="header-logo-img">
                     <div class="welcome-text"><h1 id="welcome-msg">Welcome, KIITian 👋</h1></div>
                 </div>
+                
                 <div class="header-right">
                     <div class="search-box"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search peers..."></div>
                     <button class="mobile-menu-btn"><i class="ph ph-list"></i></button>

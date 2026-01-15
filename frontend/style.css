@@ -378,15 +378,6 @@ body {
     color: black;
 }
 
-/* Hybrid Grid Layout */
-.hybrid-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
 
 .utility-stack {
     display: flex;
@@ -1951,53 +1942,7 @@ textarea:focus {
     margin-bottom: 15px;
 }
 
-/* =========================================
-   DESKTOP / LAPTOP OVERRIDES
-   ========================================= */
-@media (min-width: 1025px) {
-    .sidebar {
-        display: flex; /* Always show sidebar on desktop */
-    }
-    
-    .mobile-menu-btn {
-        display: none;
-    }
 
-    .right-sidebar-toggle {
-        display: none !important; /* Never show toggle on desktop */
-    }
-
-    .close-sidebar-btn {
-        display: none !important; /* No close button on desktop */
-    }
-
-    /* Strict Grid Layout */
-    .hybrid-layout {
-        display: grid;
-        grid-template-columns: 2.5fr 1fr; /* 70% Feed, 30% Timetable */
-        gap: 30px;
-        align-items: start;
-    }
-
-    .utility-stack {
-        display: flex !important; /* Always visible on desktop */
-        position: static; /* NO FLOATING */
-        width: auto;
-        height: auto;
-        background: transparent;
-        box-shadow: none;
-        padding: 0;
-        border-radius: 0;
-        animation: none;
-    }
-
-    /* Center the whole page content */
-    .main-content {
-        max-width: 1400px;
-        margin: 0 auto;
-        width: 100%;
-    }
-}
 
 /* --- FIX FOR INVISIBLE MODAL --- */
 .modal-overlay {

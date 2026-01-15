@@ -262,3 +262,22 @@ async function loadStudentCourses() {
         }
     } catch (err) { console.error(err); }
 }
+
+// --- LEFT SIDEBAR TOGGLE (MOBILE) ---
+window.toggleLeftSidebar = function() {
+    const sidebar = document.getElementById('left-sidebar');
+    if(sidebar) sidebar.classList.toggle('open');
+};
+
+// Auto-close sidebar when a link is clicked (Mobile UX)
+document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('.nav-menu a');
+    links.forEach(link => {
+        link.addEventListener('click', () => {
+            // If on mobile, close sidebar after click
+            if (window.innerWidth <= 1024) {
+                document.getElementById('left-sidebar').classList.remove('open');
+            }
+        });
+    });
+});
