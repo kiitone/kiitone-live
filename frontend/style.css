@@ -2133,3 +2133,99 @@ textarea:focus {
     color: #1FC166;
     border-bottom: 2px solid #1FC166;
 }
+
+/* --- FINAL LAYOUT FIX --- */
+
+/* 1. The Main Grid Container */
+.hybrid-layout {
+    display: grid;
+    grid-template-columns: 3fr 1fr; /* 75% Left, 25% Right */
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    align-items: start;
+}
+
+/* 2. Right Sidebar Styling */
+.utility-stack {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    /* No weird scrollbars */
+    overflow: visible; 
+    height: auto;
+}
+
+/* 3. New Vertical Tools List (Looks like a menu) */
+.tools-grid-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tool-card-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1px solid transparent;
+}
+
+.tool-card-row:hover {
+    background: #fff;
+    border-color: #1FC166;
+    transform: translateX(5px);
+    box-shadow: 0 2px 10px rgba(31, 193, 102, 0.1);
+}
+
+.tool-card-row span {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+/* Icons in Sidebar */
+.icon-box {
+    width: 40px; 
+    height: 40px; 
+    border-radius: 8px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+.icon-box.purple { background: #8B5CF6; }
+.icon-box.blue { background: #3B82F6; }
+.icon-box.orange { background: #F97316; }
+
+/* 4. Responsive Fix for Mobile */
+@media (max-width: 1024px) {
+    .hybrid-layout {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .utility-stack {
+        display: none; /* Hidden by default on mobile */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        z-index: 2000;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .utility-stack.open {
+        display: block;
+        animation: slideUp 0.3s ease;
+    }
+}

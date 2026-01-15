@@ -132,42 +132,59 @@
             </section>
 
             <div class="hybrid-layout">
-                <!-- CENTER FEED (Courses + Timetable + Social) -->
-                <div class="community-feed" style="flex: 2;">
+                <!-- MAIN CONTENT FEED (Left Side - 75%) -->
+                <div class="main-feed-container">
                     
-                    <!-- 1. LIVE COURSES GRID -->
-                    <div class="card widget-card" style="margin-bottom: 20px;">
+                    <!-- 1. LIVE COURSES -->
+                    <div class="card widget-card">
                         <div class="card-head">
                             <h3><i class="ph-fill ph-graduation-cap text-purple"></i> Featured Courses</h3>
                         </div>
                         <div class="class-list" id="student-course-list">
-                            <div style="padding:10px; text-align:center; color:#888;">Loading courses...</div>
+                            <div style="padding:15px; text-align:center; color:#888;">Loading courses...</div>
                         </div>
                     </div>
 
-                    
-                    <!-- 3. SOCIAL FEED -->
-                    <div class="feed-header"><h3>Campus Pulse ⚡</h3><span class="live-badge">LIVE</span></div>
-                    <div class="feed-item">
-                        <div class="feed-user"><img src="https://ui-avatars.com/api/?name=Rahul&background=random"><div><strong>Rahul Das</strong><span class="badge-founder">Founder</span></div></div>
-                        <p>Need a Flutter dev for my startup. 10% equity. 🚀</p>
-                        <button class="action-btn" onclick="attemptDM('Rahul')">Connect</button>
+                    <!-- 2. CAMPUS PULSE (Social) -->
+                    <div class="card widget-card" style="margin-top: 20px;">
+                        <div class="feed-header" style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <h3>Campus Pulse ⚡</h3>
+                            <span class="live-badge">LIVE</span>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-user">
+                                <img src="https://ui-avatars.com/api/?name=Rahul&background=random">
+                                <div><strong>Rahul Das</strong><span class="badge-founder">Founder</span></div>
+                            </div>
+                            <p>Need a Flutter dev for my startup. 10% equity. 🚀</p>
+                            <button class="action-btn" onclick="attemptDM('Rahul')">Connect</button>
+                        </div>
                     </div>
+
                 </div>
 
-                <!-- RIGHT SIDEBAR (Tools Only - CLEANED) -->
+                <!-- RIGHT SIDEBAR (Right Side - 25%) -->
                 <div class="utility-stack" id="right-sidebar">
                     <div class="close-sidebar-btn" onclick="toggleRightSidebar()">Close ✕</div>
                     
-                    <div class="tools-grid">
-                        <div class="card tool-card" onclick="window.location.href='ai-solver.html'"><i class="ph-fill ph-magic-wand text-purple"></i><span>AI</span></div>
-                        <div class="card tool-card"><i class="ph-fill ph-books text-blue"></i><span>Notes</span></div>
-                        <div class="card tool-card"><i class="ph-fill ph-bowl-food text-orange"></i><span>Mess</span></div>
+                    <!-- Tools List (Stacked Vertically) -->
+                    <h4 style="margin-bottom: 15px; color: #0B3D2E; margin-top: 0;">Quick Tools</h4>
+                    <div class="tools-grid-vertical">
+                        <div class="tool-card-row" onclick="window.location.href='ai-solver.html'">
+                            <div class="icon-box purple"><i class="ph-fill ph-magic-wand"></i></div>
+                            <span>AI Solver</span>
+                        </div>
+                        <div class="tool-card-row">
+                            <div class="icon-box blue"><i class="ph-fill ph-books"></i></div>
+                            <span>Notes Repo</span>
+                        </div>
+                        <div class="tool-card-row">
+                            <div class="icon-box orange"><i class="ph-fill ph-bowl-food"></i></div>
+                            <span>Mess Menu</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
 
     <!-- LOGIN MODAL -->
     <div class="modal-overlay" id="login-modal">
