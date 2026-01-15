@@ -1944,35 +1944,7 @@ textarea:focus {
 
 
 
-/* --- FIX FOR INVISIBLE MODAL --- */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    z-index: 9999 !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: 0.3s ease;
-}
 
-.modal-overlay.show {
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: all !important;
-}
-
-.user-profile {
-    cursor: pointer !important;
-    user-select: none;
-}
 
 /* --- FIX FOR INVISIBLE MODAL --- */
 .modal-overlay {
@@ -2010,39 +1982,7 @@ textarea:focus {
 
 
 
-/* --- DESKTOP LAYOUT FIX (CENTERED & COMPACT) --- */
-@media (min-width: 1025px) {
-    /* Center the main content area */
-    .main-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center; 
-    }
 
-    /* Force all major sections to have a max width */
-    .top-bar, 
-    .hero-banner, 
-    .hybrid-layout, 
-    .course-hero, 
-    .course-layout {
-        width: 100%;
-        max-width: 1100px; /* Perfect reading width */
-    }
-
-    /* Fix the Dashboard Grid Ratio */
-    .hybrid-layout {
-        display: grid;
-        grid-template-columns: 2.5fr 1fr; /* Main content wider, sidebar narrower */
-        gap: 25px;
-    }
-
-    /* Make the Right Sidebar (Utility Stack) look cleaner */
-    .utility-stack {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-}
 
 /* Fix for Course Card in List */
 .class-item {
@@ -2165,6 +2105,105 @@ textarea:focus {
         width: 100%;
         height: auto;
         z-index: 2000;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .utility-stack.open {
+        display: block;
+        animation: slideUp 0.3s ease;
+    }
+}
+
+
+/* =========================================
+   FINAL CONSOLIDATED FIXES (CLEAN)
+   ========================================= */
+
+/* 1. Modal Visibility Fix */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 9999 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: all !important;
+}
+
+/* 2. User Profile Cursor Fix */
+.user-profile {
+    cursor: pointer !important;
+    user-select: none;
+}
+
+/* 3. Desktop Layout (Centered 1100px Grid) */
+@media (min-width: 1025px) {
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+    }
+
+    .top-bar, .hero-banner, .hybrid-layout, .course-hero, .course-layout {
+        width: 100%;
+        max-width: 1100px;
+    }
+
+    .hybrid-layout {
+        display: grid;
+        grid-template-columns: 3fr 1fr; /* 75% Left, 25% Right */
+        gap: 30px;
+        align-items: start;
+    }
+    
+    .utility-stack {
+        display: flex !important;
+        position: static;
+        width: auto;
+        height: auto;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        overflow: visible;
+    }
+    
+    .mobile-menu-btn, .right-sidebar-toggle, .close-sidebar-btn {
+        display: none !important;
+    }
+}
+
+/* 4. Mobile Layout (Stack & Toggles) */
+@media (max-width: 1024px) {
+    .hybrid-layout {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .utility-stack {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        z-index: 2000;
+        background: white;
+        padding: 20px;
         border-radius: 20px 20px 0 0;
         box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
     }
