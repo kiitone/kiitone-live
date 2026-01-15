@@ -6,14 +6,15 @@ const nodemailer = require("nodemailer");
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
-// --- EMAIL CONFIGURATION (FIXED) ---
+// --- EMAIL CONFIGURATION ---
+// This reads the specific variables you added to your .env file
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
-    secure: true, // Use SSL
+    secure: true,
     auth: {
-        user: "kiitone.official@gmail.com", // REPLACE THIS
-        pass: "ukku ymvo fduz yfmb" // REPLACE THIS
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -21,11 +22,20 @@ const transporter = nodemailer.createTransport({
 router.post("/register", async (req, res) => {
   try {
     const { name, roll, section, branch, email, password } = req.body;
+    
+    // Check for existing user (Email OR Roll)
+    const userCheck = await pool.query(
+        "SELECT * FROM users WHERE email = $1 OR roll = $2", 
+        [email, roll.toString()]
+    );
 
-    // Check if user exists (Email OR Roll)
-    const userCheck = await pool.query("SELECT * FROM users WHERE email = $1 OR roll = $2", [email, roll]);
     if (userCheck.rows.length > 0) {
-        return res.status(400).json({ error: "User or Roll Number already exists. Please login." });
+        // If user exists but NOT verified, delete them so they can try again
+        if (!userCheck.rows[0].is_verified) {
+             await pool.query("DELETE FROM users WHERE email = $1", [email]);
+        } else {
+             return res.status(400).json({ error: "User or Roll Number already registered. Please login." });
+        }
     }
 
     // Generate 6-digit OTP
@@ -36,26 +46,27 @@ router.post("/register", async (req, res) => {
     await pool.query(
       `INSERT INTO users (name, roll, section, branch, email, password, role, otp, is_verified)
        VALUES ($1, $2, $3, $4, $5, $6, 'student', $7, FALSE)`,
-      [name, roll, section, branch, email, hashed, otp]
+      [name, roll, section, branch || 'B.Tech', email, hashed, otp]
     );
 
     // Send Email
-    await transporter.sendMail({
-        from: '"KIIT ONE Admin" <no-reply@kiitone.in>',
-        to: email,
-        subject: "Verify your KIIT ONE Account",
-        text: `Your OTP is: ${otp}. It expires in 10 minutes.`
-    });
-
-    res.json({ success: true, message: "OTP sent to email. Please verify." });
+    try {
+        await transporter.sendMail({
+            from: '"KIIT ONE" <no-reply@kiitone.in>',
+            to: email,
+            subject: "Your OTP for KIIT ONE",
+            text: `Your OTP is: ${otp}`
+        });
+        res.json({ success: true, message: "OTP sent successfully" });
+    } catch (emailErr) {
+        console.error("Email Failed:", emailErr);
+        // Fallback: Return OTP in response if email fails (Only for debugging/emergency)
+        res.json({ success: true, message: "Email failed (Server Issue). Use OTP: " + otp, debug_otp: otp });
+    }
 
   } catch (err) {
-    console.error("Register Error:", err);
-    // If it's a duplicate key error from DB
-    if (err.code === '23505') {
-        return res.status(400).json({ error: "Email or Roll Number already taken." });
-    }
-    res.status(500).json({ error: "Email failed to send. Check server logs." });
+    console.error("Server Error:", err);
+    res.status(500).json({ error: "Registration failed. Try again." });
   }
 });
 
@@ -63,29 +74,25 @@ router.post("/register", async (req, res) => {
 router.post("/verify", async (req, res) => {
     try {
         const { email, otp } = req.body;
-        
         const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+        
         if (user.rows.length === 0) return res.status(400).json({ error: "User not found" });
 
         if (user.rows[0].otp !== otp) {
             return res.status(400).json({ error: "Invalid OTP" });
         }
 
-        // OTP Matches -> Verify User
         await pool.query("UPDATE users SET is_verified = TRUE, otp = NULL WHERE email = $1", [email]);
 
-        // Generate Token
         const token = jwt.sign(
             { id: user.rows[0].id, email: user.rows[0].email, role: user.rows[0].role },
-            JWT_SECRET,
-            { expiresIn: "7d" }
+            JWT_SECRET, { expiresIn: "7d" }
         );
 
-        delete user.rows[0].password;
         res.json({ success: true, token, user: user.rows[0] });
 
     } catch (err) {
-        res.status(500).json({ error: "Verification failed" });
+        res.status(500).json({ error: "Verification error" });
     }
 });
 
@@ -93,59 +100,51 @@ router.post("/verify", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    
+    if (user.rows.length === 0) return res.status(400).json({ error: "User does not exist" });
 
-    const result = await pool.query("SELECT * FROM users WHERE email=$1", [email]);
-    if (result.rowCount === 0) return res.status(400).json({ error: "User not found" });
-
-    const user = result.rows[0];
-
-    const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(400).json({ error: "Invalid password" });
-
-    // Check Verification
-    if (!user.is_verified) {
+    // Allow Admin bypass if verified manually in DB
+    if (!user.rows[0].is_verified && user.rows[0].role !== 'admin') {
         return res.status(400).json({ error: "Account not verified. Register again to get OTP." });
     }
 
+    const valid = await bcrypt.compare(password, user.rows[0].password);
+    if (!valid) return res.status(400).json({ error: "Invalid password" });
+
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "7d" }
+      { id: user.rows[0].id, email: user.rows[0].email, role: user.rows[0].role },
+      JWT_SECRET, { expiresIn: "7d" }
     );
 
-    delete user.password;
-    res.json({ success: true, token, user });
+    res.json({ success: true, token, user: user.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Login error" });
   }
 });
 
+// GET Current User
 const authMiddleware = require("../middleware/auth");
-
 router.get("/me", authMiddleware, async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT id,name,roll,section,branch,email,role FROM users WHERE id=$1",
-      [req.user.id]
-    );
-    res.json({ success: true, user: result.rows[0] });
-  } catch {
-    res.status(500).json({ error: "Failed to load user" });
-  }
+    try {
+        const result = await pool.query("SELECT * FROM users WHERE id=$1", [req.user.id]);
+        res.json({ success: true, user: result.rows[0] });
+    } catch { res.status(500).json({ error: "Error" }); }
+});
+
+// Public Routes (Courses & Directory)
+router.get("/courses", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM courses ORDER BY created_at DESC");
+        res.json({ success: true, courses: result.rows });
+    } catch { res.status(500).json({ error: "Error" }); }
 });
 
 router.get("/directory", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT id, name, roll, branch, role FROM users ORDER BY name ASC");
-    res.json({ success: true, users: result.rows });
-  } catch (err) { res.status(500).json({ error: "Server error" }); }
-});
-
-router.get("/courses", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM courses ORDER BY created_at DESC");
-    res.json({ success: true, courses: result.rows });
-  } catch (err) { res.status(500).json({ error: "Server error" }); }
+    try {
+        const result = await pool.query("SELECT id, name, roll, branch, role FROM users ORDER BY name ASC");
+        res.json({ success: true, users: result.rows });
+    } catch { res.status(500).json({ error: "Error" }); }
 });
 
 module.exports = router;
