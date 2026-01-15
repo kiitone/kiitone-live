@@ -96,4 +96,29 @@ router.post("/reset-password", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Server Error" }); }
 });
 
+// RESET PASSWORD ROUTE
+router.post("/reset-password", async (req, res) => {
+    try {
+        const { email, newPass } = req.body;
+        
+        // 1. Check if user exists
+        const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+        if (userCheck.rows.length === 0) {
+            return res.status(404).json({ error: "Email not found" });
+        }
+
+        // 2. Hash new password
+        const hashed = await bcrypt.hash(newPass, 10);
+        
+        // 3. Update DB
+        await pool.query("UPDATE users SET password = $1 WHERE email = $2", [hashed, email]);
+        
+        res.json({ success: true, message: "Password updated successfully" });
+        
+    } catch (err) { 
+        console.error(err);
+        res.status(500).json({ error: "Server Error" }); 
+    }
+});
+
 module.exports = router;

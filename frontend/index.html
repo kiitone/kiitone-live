@@ -178,13 +178,13 @@
             </div>
 
             <!-- TABS -->
-            <div class="auth-tabs" style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
+            <div class="auth-tabs" id="auth-tabs" style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
                 <button id="tab-login" class="tab-btn active" onclick="switchAuthTab('login')">Login</button>
                 <button id="tab-register" class="tab-btn" onclick="switchAuthTab('register')">Register</button>
             </div>
 
             <form id="auth-form">
-                <!-- REGISTER FIELDS (Hidden by default) -->
+                <!-- REGISTER FIELDS -->
                 <div id="register-fields" style="display:none;">
                     <div class="input-group"><label>Full Name</label><input type="text" id="inp-name"></div>
                     <div class="row-group">
@@ -193,20 +193,24 @@
                     </div>
                 </div>
 
-                <!-- COMMON FIELDS -->
+                <!-- COMMON EMAIL -->
                 <div class="input-group"><label>Official Email ID</label><input type="email" id="inp-email" required></div>
                 
                 <!-- PASSWORD FIELD -->
                 <div class="input-group" id="pass-group">
                     <label>Password (Roll No / Admin Pass)</label>
-                    <input type="password" id="inp-password" required>
+                    <input type="password" id="inp-password">
+                    <div style="text-align:right; font-size:0.8rem; margin-top:5px;">
+                        <a href="#" onclick="switchAuthTab('forgot')" style="color:#1FC166; text-decoration:none;">Forgot Password?</a>
+                    </div>
                 </div>
 
-                <div id="forgot-pass-link" style="text-align:right; font-size:0.8rem; margin-bottom:15px;">
-                    <a href="#" onclick="startForgotPass()" style="color:#1FC166; text-decoration:none;">Forgot Password?</a>
+                <!-- FORGOT PASSWORD FIELDS -->
+                <div id="forgot-fields" style="display:none;">
+                    <div class="input-group"><label>New Password</label><input type="password" id="inp-new-pass" placeholder="Enter new password"></div>
                 </div>
 
-                <!-- OTP FIELD (Hidden) -->
+                <!-- OTP FIELD -->
                 <div id="otp-field" style="display: none; margin-bottom: 15px;">
                     <div class="input-group">
                         <label style="color: #1FC166; font-weight: bold;">Enter OTP</label>
@@ -215,6 +219,11 @@
                 </div>
 
                 <button type="submit" class="btn-login-submit" id="btn-submit">Login</button>
+                
+                <!-- Back Link -->
+                <div id="back-login-link" style="display:none; text-align:center; margin-top:10px;">
+                    <a href="#" onclick="switchAuthTab('login')" style="color:#666; font-size:0.9rem;">Back to Login</a>
+                </div>
             </form>
         </div>
     </div>

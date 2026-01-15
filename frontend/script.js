@@ -2,47 +2,23 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     loadStudentCourses();
     
-    // --- 1. AUTH LOGIC ---
     const authForm = document.getElementById('auth-form');
-    let isRegistering = false;
-    let isVerifying = false;
+    
+    // State Variables
+    let mode = 'login'; // 'login', 'register', 'forgot', 'verify_reg', 'verify_reset'
     let generatedOTP = null; 
     let tempUserData = null; 
 
     if (authForm) {
         authForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+            const email = document.getElementById("inp-email").value;
 
-            // A. VERIFY OTP FLOW
-            if (isVerifying) {
-                const userOtp = document.getElementById("inp-otp").value;
-                if (userOtp === generatedOTP) {
-                    try {
-                        const res = await fetch("/api/auth/register", {
-                            method: "POST", headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(tempUserData)
-                        });
-                        const data = await res.json();
-                        if (data.success) {
-                            alert("✅ Verified! Logging in...");
-                            finishLogin(data);
-                        } else {
-                            alert("Registration Failed: " + data.error);
-                            window.location.reload();
-                        }
-                    } catch (err) { alert("Server Error"); }
-                } else {
-                    alert("❌ Incorrect OTP");
-                }
-                return;
-            }
-
-            // B. START REGISTER FLOW
-            if (isRegistering) {
+            // --- A. REGISTER FLOW ---
+            if (mode === 'register') {
                 const name = document.getElementById("inp-name").value;
                 const roll = document.getElementById("inp-roll-reg").value;
                 const section = document.getElementById("inp-sec").value;
-                const email = document.getElementById("inp-email").value;
                 const password = document.getElementById("inp-password").value;
 
                 if (!name || !roll || !email || !password) return alert("Fill all fields");
@@ -50,26 +26,70 @@ document.addEventListener('DOMContentLoaded', () => {
                 generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
                 tempUserData = { name, roll, section, branch: "CSE", email, password };
 
-                const params = { to_email: email, otp: generatedOTP };
-
-                // ⚠️ REPLACE 'YOUR_TEMPLATE_ID' WITH YOUR REAL ID (e.g. template_abc123)
-                emailjs.send("service_neje326", "template_0pw8tol", params)
-                    .then(() => {
-                        alert(`✨ OTP Sent to ${email}`);
-                        isVerifying = true;
-                        document.getElementById('register-fields').style.display = 'none';
-                        document.getElementById('pass-group').style.display = 'none';
-                        document.getElementById('otp-field').style.display = 'block';
-                        document.getElementById('btn-submit').innerText = "Verify & Create Account";
-                    })
-                    .catch((err) => {
-                        alert("Email Failed: " + JSON.stringify(err));
-                    });
+                sendEmail(email, generatedOTP, () => {
+                    mode = 'verify_reg';
+                    updateUIState();
+                    alert(`✨ OTP Sent to ${email}`);
+                });
                 return;
             }
 
-            // C. LOGIN FLOW
-            const email = document.getElementById("inp-email").value;
+            // --- B. FORGOT PASSWORD FLOW ---
+            if (mode === 'forgot') {
+                const newPass = document.getElementById("inp-new-pass").value;
+                if (!email || !newPass) return alert("Enter Email and New Password");
+
+                generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                tempUserData = { email, newPass };
+
+                sendEmail(email, generatedOTP, () => {
+                    mode = 'verify_reset';
+                    updateUIState();
+                    alert(`✨ OTP Sent to ${email}`);
+                });
+                return;
+            }
+
+            // --- C. VERIFY OTP (For Register OR Reset) ---
+            if (mode === 'verify_reg' || mode === 'verify_reset') {
+                const userOtp = document.getElementById("inp-otp").value;
+                if (userOtp === generatedOTP) {
+                    
+                    if (mode === 'verify_reg') {
+                        // Complete Registration
+                        try {
+                            const res = await fetch("/api/auth/register", {
+                                method: "POST", headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(tempUserData)
+                            });
+                            const data = await res.json();
+                            if (data.success) finishLogin(data);
+                            else alert("Error: " + data.error);
+                        } catch(err) { alert("Server Error"); }
+                    
+                    } else if (mode === 'verify_reset') {
+                        // Complete Password Reset
+                        try {
+                            const res = await fetch("/api/auth/reset-password", {
+                                method: "POST", headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(tempUserData)
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                                alert("✅ Password Updated! Please Login.");
+                                window.location.reload();
+                            } else {
+                                alert("Error: " + data.error);
+                            }
+                        } catch(err) { alert("Server Error"); }
+                    }
+                } else {
+                    alert("❌ Incorrect OTP");
+                }
+                return;
+            }
+
+            // --- D. LOGIN FLOW (Default) ---
             const password = document.getElementById("inp-password").value;
             try {
                 const res = await fetch("/api/auth/login", {
@@ -83,17 +103,71 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Tab Switcher
-    window.switchAuthTab = (mode) => {
-        isRegistering = (mode === 'register');
-        document.getElementById('tab-login').classList.toggle('active', !isRegistering);
-        document.getElementById('tab-register').classList.toggle('active', isRegistering);
-        document.getElementById('register-fields').style.display = isRegistering ? 'block' : 'none';
-        document.getElementById('btn-submit').innerText = isRegistering ? 'Get OTP' : 'Login';
-        isVerifying = false;
-        document.getElementById('otp-field').style.display = 'none';
-        document.getElementById('pass-group').style.display = 'block';
+    // Helper: Switch Modes
+    window.switchAuthTab = (newMode) => {
+        mode = newMode;
+        updateUIState();
     };
+
+    function updateUIState() {
+        // Elements
+        const tabs = document.getElementById('auth-tabs');
+        const regFields = document.getElementById('register-fields');
+        const passGroup = document.getElementById('pass-group');
+        const forgotFields = document.getElementById('forgot-fields');
+        const otpField = document.getElementById('otp-field');
+        const btn = document.getElementById('btn-submit');
+        const backLink = document.getElementById('back-login-link');
+        const title = document.getElementById('modal-title');
+
+        // Reset Visibilities
+        regFields.style.display = 'none';
+        passGroup.style.display = 'block';
+        forgotFields.style.display = 'none';
+        otpField.style.display = 'none';
+        tabs.style.display = 'flex';
+        backLink.style.display = 'none';
+
+        // Tab Highlights
+        document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+        document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+
+        // Logic
+        if (mode === 'login') {
+            title.innerText = "Student Login";
+            btn.innerText = "Login";
+        } 
+        else if (mode === 'register') {
+            title.innerText = "Student Register";
+            regFields.style.display = 'block';
+            btn.innerText = "Get OTP";
+        }
+        else if (mode === 'forgot') {
+            title.innerText = "Reset Password";
+            tabs.style.display = 'none'; // Hide tabs
+            passGroup.style.display = 'none'; // Hide old pass
+            forgotFields.style.display = 'block'; // Show new pass input
+            backLink.style.display = 'block';
+            btn.innerText = "Get OTP";
+        }
+        else if (mode === 'verify_reg' || mode === 'verify_reset') {
+            title.innerText = "Verify OTP";
+            tabs.style.display = 'none';
+            regFields.style.display = 'none';
+            passGroup.style.display = 'none';
+            forgotFields.style.display = 'none';
+            otpField.style.display = 'block';
+            btn.innerText = mode === 'verify_reg' ? "Verify & Register" : "Verify & Update";
+        }
+    }
+
+    function sendEmail(email, otp, callback) {
+        const params = { to_email: email, otp: otp };
+        // REPLACE WITH YOUR REAL IDS
+        emailjs.send("service_neje326", "YOUR_TEMPLATE_ID", params)
+            .then(() => callback())
+            .catch((err) => alert("Email Failed: " + JSON.stringify(err)));
+    }
 
     function finishLogin(data) {
         localStorage.setItem("kiit_user", JSON.stringify(data.user));
@@ -102,15 +176,17 @@ document.addEventListener('DOMContentLoaded', () => {
         checkAuth();
     }
     
-    // Close modals
     window.onclick = (e) => {
         if (e.target.classList.contains('modal-overlay')) {
             e.target.classList.remove('show');
+            // Reset to login if closed
+            mode = 'login';
+            updateUIState();
         }
     };
 });
 
-// --- 2. MAIN UI UPDATER ---
+// --- UI UPDATER (Keep existing checkAuth, etc.) ---
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("kiit_user"));
     const guestView = document.querySelector('.guest-view');
@@ -143,7 +219,7 @@ function checkAuth() {
     }
 }
 
-// --- 3. GLOBAL FUNCTIONS ---
+// Global Functions
 window.handleProfileClick = function() {
     const user = localStorage.getItem("kiit_user");
     if (user) document.getElementById('super-profile-modal').classList.add('show');
@@ -157,19 +233,15 @@ window.handleLogout = function(e) {
 };
 
 window.closeSuperProfile = function() { document.getElementById('super-profile-modal').classList.remove('show'); };
-
 window.attemptDM = function(name) {
     const user = localStorage.getItem("kiit_user");
     if(!user) document.getElementById('login-modal').classList.add('show');
     else alert("Connection request sent to " + name);
 };
-
 window.toggleRightSidebar = function() {
     const sidebar = document.getElementById('right-sidebar');
     if(sidebar) sidebar.classList.toggle('open');
 };
-
-// --- 4. LOAD COURSES ---
 async function loadStudentCourses() {
     const container = document.getElementById('student-course-list');
     if (!container) return;
@@ -189,66 +261,4 @@ async function loadStudentCourses() {
             container.innerHTML = '<div style="padding:10px; color:#666;">No active courses. Check back later!</div>';
         }
     } catch (err) { console.error(err); }
-}
-
-// --- 5. DEMO FEATURES (The Missing Part) ---
-const features = {
-    'Resume Builder': () => alert("🔍 AI Analyzing Resume..."),
-    'Room Checker': () => alert("📍 Empty Rooms Found:\n- C-Block 304\n- Library Room 2"),
-    'Placements': () => alert("💼 3 New Companies Visiting:\n- Microsoft (45 LPA)\n- Deloitte (8 LPA)"),
-    'Mess Menu': () => alert("🍔 Mess Menu (Today):\nLunch: Chicken/Paneer\nDinner: Fried Rice"),
-    'Transport': () => alert("Bus 4B Arriving in 5 mins 🚌")
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.protected-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            const text = link.innerText.trim();
-            if(features[text]) { e.preventDefault(); features[text](); }
-        });
-    });
-});
-
-
-
-
-// --- FORGOT PASSWORD FLOW ---
-window.startForgotPass = function() {
-    const email = prompt("Enter your Registered Email:");
-    if (!email) return;
-
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // Send Email via EmailJS
-    const params = { to_email: email, otp: otp };
-    
-    // REPLACE WITH YOUR SERVICE & TEMPLATE ID
-    emailjs.send("service_neje326", "template_0pw8tol", params)
-        .then(() => {
-            const userOtp = prompt(`OTP sent to ${email}. Enter it here:`);
-            if (userOtp === otp) {
-                const newPass = prompt("Enter New Password:");
-                if (newPass) {
-                    // Call Backend to Reset (We need to add this route next)
-                    resetPasswordBackend(email, newPass);
-                }
-            } else {
-                alert("Wrong OTP");
-            }
-        })
-        .catch(err => alert("Email Failed: " + JSON.stringify(err)));
-};
-
-async function resetPasswordBackend(email, newPass) {
-    try {
-        const res = await fetch('/api/auth/reset-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, newPass })
-        });
-        const data = await res.json();
-        if (data.success) alert("✅ Password Reset! Login now.");
-        else alert("Error: " + data.error);
-    } catch (e) { alert("Server Error"); }
 }
