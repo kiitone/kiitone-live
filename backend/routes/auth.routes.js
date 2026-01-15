@@ -82,4 +82,18 @@ router.get("/directory", async (req, res) => {
     } catch { res.status(500).json({ error: "Error" }); }
 });
 
+// RESET PASSWORD ROUTE
+router.post("/reset-password", async (req, res) => {
+    try {
+        const { email, newPass } = req.body;
+        const hashed = await bcrypt.hash(newPass, 10);
+        
+        const result = await pool.query("UPDATE users SET password = $1 WHERE email = $2", [hashed, email]);
+        
+        if (result.rowCount > 0) res.json({ success: true });
+        else res.status(400).json({ error: "Email not found" });
+        
+    } catch (err) { res.status(500).json({ error: "Server Error" }); }
+});
+
 module.exports = router;

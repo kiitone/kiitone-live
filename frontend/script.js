@@ -208,3 +208,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+
+
+// --- FORGOT PASSWORD FLOW ---
+window.startForgotPass = function() {
+    const email = prompt("Enter your Registered Email:");
+    if (!email) return;
+
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Send Email via EmailJS
+    const params = { to_email: email, otp: otp };
+    
+    // REPLACE WITH YOUR SERVICE & TEMPLATE ID
+    emailjs.send("service_neje326", "template_0pw8tol", params)
+        .then(() => {
+            const userOtp = prompt(`OTP sent to ${email}. Enter it here:`);
+            if (userOtp === otp) {
+                const newPass = prompt("Enter New Password:");
+                if (newPass) {
+                    // Call Backend to Reset (We need to add this route next)
+                    resetPasswordBackend(email, newPass);
+                }
+            } else {
+                alert("Wrong OTP");
+            }
+        })
+        .catch(err => alert("Email Failed: " + JSON.stringify(err)));
+};
+
+async function resetPasswordBackend(email, newPass) {
+    try {
+        const res = await fetch('/api/auth/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, newPass })
+        });
+        const data = await res.json();
+        if (data.success) alert("✅ Password Reset! Login now.");
+        else alert("Error: " + data.error);
+    } catch (e) { alert("Server Error"); }
+}
