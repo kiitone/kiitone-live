@@ -2,75 +2,83 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     loadStudentCourses();
     
+    // --- 1. AUTH LOGIC ---
     const authForm = document.getElementById('auth-form');
-    let isRegistering = false; // Default is Login
-    let isVerifying = false;   // OTP Mode
+    let isRegistering = false;
+    let isVerifying = false;
+    let generatedOTP = null; 
+    let tempUserData = null; 
 
     if (authForm) {
         authForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const email = document.getElementById("inp-email").value;
-            const password = document.getElementById("inp-password").value;
-
-            // --- 1. OTP VERIFICATION ---
+            // A. VERIFY OTP FLOW
             if (isVerifying) {
-                const otp = document.getElementById("inp-otp").value;
-                try {
-                    const res = await fetch("/api/auth/verify", {
-                        method: "POST", headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ email, otp })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        alert("✅ Verified! Logging in...");
-                        finishLogin(data);
-                    } else {
-                        alert("❌ " + data.error);
-                    }
-                } catch (err) { alert("Server error"); }
+                const userOtp = document.getElementById("inp-otp").value;
+                if (userOtp === generatedOTP) {
+                    try {
+                        const res = await fetch("/api/auth/register", {
+                            method: "POST", headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(tempUserData)
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            alert("✅ Verified! Logging in...");
+                            finishLogin(data);
+                        } else {
+                            alert("Registration Failed: " + data.error);
+                            window.location.reload();
+                        }
+                    } catch (err) { alert("Server Error"); }
+                } else {
+                    alert("❌ Incorrect OTP");
+                }
                 return;
             }
 
-            // --- 2. REGISTER FLOW ---
+            // B. START REGISTER FLOW
             if (isRegistering) {
                 const name = document.getElementById("inp-name").value;
                 const roll = document.getElementById("inp-roll-reg").value;
                 const section = document.getElementById("inp-sec").value;
-                
-                try {
-                    const res = await fetch("/api/auth/register", {
-                        method: "POST", headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ name, roll, section, branch: "CSE", email, password })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        // Switch to OTP Mode
+                const email = document.getElementById("inp-email").value;
+                const password = document.getElementById("inp-password").value;
+
+                if (!name || !roll || !email || !password) return alert("Fill all fields");
+
+                generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                tempUserData = { name, roll, section, branch: "CSE", email, password };
+
+                const params = { to_email: email, otp: generatedOTP };
+
+                // ⚠️ REPLACE 'YOUR_TEMPLATE_ID' WITH YOUR REAL ID (e.g. template_abc123)
+                emailjs.send("service_neje326", "template_0pw8tol", params)
+                    .then(() => {
+                        alert(`✨ OTP Sent to ${email}`);
                         isVerifying = true;
                         document.getElementById('register-fields').style.display = 'none';
                         document.getElementById('pass-group').style.display = 'none';
                         document.getElementById('otp-field').style.display = 'block';
-                        document.getElementById('btn-submit').innerText = "Verify OTP";
-                        alert("✨ OTP Sent! Check your email.");
-                    } else {
-                        alert(data.error);
-                    }
-                } catch (err) { alert("Server error"); }
+                        document.getElementById('btn-submit').innerText = "Verify & Create Account";
+                    })
+                    .catch((err) => {
+                        alert("Email Failed: " + JSON.stringify(err));
+                    });
                 return;
             }
 
-            // --- 3. LOGIN FLOW ---
+            // C. LOGIN FLOW
+            const email = document.getElementById("inp-email").value;
+            const password = document.getElementById("inp-password").value;
             try {
                 const res = await fetch("/api/auth/login", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
                 });
                 const data = await res.json();
-                if (data.success) {
-                    finishLogin(data);
-                } else {
-                    alert(data.error);
-                }
+                if (data.success) finishLogin(data);
+                else alert(data.error);
             } catch (err) { alert("Server error"); }
         });
     }
@@ -80,12 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
         isRegistering = (mode === 'register');
         document.getElementById('tab-login').classList.toggle('active', !isRegistering);
         document.getElementById('tab-register').classList.toggle('active', isRegistering);
-        
         document.getElementById('register-fields').style.display = isRegistering ? 'block' : 'none';
         document.getElementById('btn-submit').innerText = isRegistering ? 'Get OTP' : 'Login';
-        document.getElementById('modal-title').innerText = isRegistering ? 'Student Register' : 'Student Login';
-        
-        // Reset OTP if switching
         isVerifying = false;
         document.getElementById('otp-field').style.display = 'none';
         document.getElementById('pass-group').style.display = 'block';
@@ -106,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 });
 
-// --- UI UPDATER & FUNCTIONS ---
+// --- 2. MAIN UI UPDATER ---
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("kiit_user"));
     const guestView = document.querySelector('.guest-view');
@@ -131,7 +135,6 @@ function checkAuth() {
 
         if(adminLink) adminLink.style.display = (user.role === 'admin') ? 'flex' : 'none';
         if(mobileExtras) mobileExtras.style.display = 'flex';
-
     } else {
         guestView.classList.remove('hidden');
         userView.classList.add('hidden');
@@ -140,13 +143,11 @@ function checkAuth() {
     }
 }
 
+// --- 3. GLOBAL FUNCTIONS ---
 window.handleProfileClick = function() {
     const user = localStorage.getItem("kiit_user");
-    if (user) {
-        document.getElementById('super-profile-modal').classList.add('show');
-    } else {
-        document.getElementById('login-modal').classList.add('show');
-    }
+    if (user) document.getElementById('super-profile-modal').classList.add('show');
+    else document.getElementById('login-modal').classList.add('show');
 };
 
 window.handleLogout = function(e) {
@@ -155,17 +156,12 @@ window.handleLogout = function(e) {
     window.location.reload();
 };
 
-window.closeSuperProfile = function() {
-    document.getElementById('super-profile-modal').classList.remove('show');
-};
+window.closeSuperProfile = function() { document.getElementById('super-profile-modal').classList.remove('show'); };
 
 window.attemptDM = function(name) {
     const user = localStorage.getItem("kiit_user");
-    if(!user) {
-        document.getElementById('login-modal').classList.add('show');
-    } else {
-        alert("Connection request sent to " + name);
-    }
+    if(!user) document.getElementById('login-modal').classList.add('show');
+    else alert("Connection request sent to " + name);
 };
 
 window.toggleRightSidebar = function() {
@@ -173,10 +169,10 @@ window.toggleRightSidebar = function() {
     if(sidebar) sidebar.classList.toggle('open');
 };
 
+// --- 4. LOAD COURSES ---
 async function loadStudentCourses() {
     const container = document.getElementById('student-course-list');
     if (!container) return;
-
     try {
         const res = await fetch('/api/auth/courses');
         const data = await res.json();
@@ -194,3 +190,21 @@ async function loadStudentCourses() {
         }
     } catch (err) { console.error(err); }
 }
+
+// --- 5. DEMO FEATURES (The Missing Part) ---
+const features = {
+    'Resume Builder': () => alert("🔍 AI Analyzing Resume..."),
+    'Room Checker': () => alert("📍 Empty Rooms Found:\n- C-Block 304\n- Library Room 2"),
+    'Placements': () => alert("💼 3 New Companies Visiting:\n- Microsoft (45 LPA)\n- Deloitte (8 LPA)"),
+    'Mess Menu': () => alert("🍔 Mess Menu (Today):\nLunch: Chicken/Paneer\nDinner: Fried Rice"),
+    'Transport': () => alert("Bus 4B Arriving in 5 mins 🚌")
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.protected-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const text = link.innerText.trim();
+            if(features[text]) { e.preventDefault(); features[text](); }
+        });
+    });
+});
