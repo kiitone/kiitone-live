@@ -29,6 +29,7 @@ async function loadData() {
 
 // --- COURSE FUNCTIONS (UPGRADED) ---
 window.launchCourse = async function() {
+    // Get values by specific IDs
     const title = document.getElementById('course-title').value;
     const category = document.getElementById('course-category').value;
     const price = document.getElementById('course-price').value;
@@ -36,7 +37,7 @@ window.launchCourse = async function() {
     const description = document.getElementById('course-desc').value;
 
     if(!title || !price) {
-        alert("Please enter Title and Price");
+        alert("Please enter at least a Title and Price");
         return;
     }
 
@@ -48,6 +49,24 @@ window.launchCourse = async function() {
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ title, category, price, discount_code, description })
         });
+
+        const data = await res.json();
+
+        if(data.success) {
+            alert("Course Launched! 🚀");
+            // Clear the form
+            document.getElementById('course-title').value = "";
+            document.getElementById('course-price').value = "";
+            document.getElementById('course-coupon').value = "";
+            document.getElementById('course-desc').value = "";
+            loadData(); // Refresh list immediately
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch(err) {
+        alert("Server connection failed.");
+    }
+};
         
         const data = await res.json();
         if(data.success) {
