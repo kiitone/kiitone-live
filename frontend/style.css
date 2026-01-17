@@ -47,11 +47,16 @@ body {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    height: 100%;
+    height: 100vh;
     overflow-y: auto;
-    z-index: 100;
-    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+    z-index: 3000;
     padding: 20px;
+    transition: left 0.3s ease; /* Smooth slide animation */
+}
+
+/* HIDE Mobile Buttons on Desktop */
+.mobile-menu-toggle, .sidebar-close-btn {
+    display: none !important;
 }
 
 .brand {
@@ -1873,10 +1878,74 @@ textarea:focus {
 }
 
 /* =========================================
-   RESPONSIVE & LAYOUT FIXES
+   RESPONSIVE & MOBILE SIDEBAR
    ========================================= */
 
-/* DEFAULT (MOBILE FIRST BEHAVIOR FOR UTILITY STACK) */
+@media (max-width: 1024px) {
+    /* 1. SIDEBAR: Hidden by default */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%; /* Move off-screen */
+        width: 280px;
+        height: 100vh;
+        box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+    }
+
+    /* 2. SIDEBAR: Open State */
+    .sidebar.open {
+        left: 0; /* Slide in */
+    }
+
+    /* 3. Show Hamburger & Cross */
+    .mobile-menu-toggle {
+        display: block !important;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        margin-right: 15px;
+    }
+
+    .sidebar-close-btn {
+        display: block !important;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* 4. Hide Search on Mobile */
+    .search-box { display: none; }
+    
+    /* 5. Stack Layout */
+    .hybrid-layout { display: flex; flex-direction: column; }
+}
+
+/* UTILITY STACK (Right Sidebar) */
+.utility-stack {
+    display: none; 
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60vh;
+    background: white;
+    z-index: 2000;
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+.utility-stack.open { display: flex; flex-direction: column; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .utility-stack {
     /* Hidden on mobile by default, toggled via JS */
     display: none; 

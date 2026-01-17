@@ -46,8 +46,8 @@
                     <div class="kiit-logo-wrapper"><img src="images/sidebar-logo.png" alt="KIIT Logo"></div>
                     <div class="logo-text"><h2>KIIT ONE</h2></div>
                 </div>
-                <!-- CLOSE BUTTON (Mobile Only) -->
-                <div class="sidebar-close-btn" onclick="toggleLeftSidebar()">✕</div>
+                <!-- CLOSE BUTTON (Visible only on Mobile) -->
+                <button class="sidebar-close-btn" onclick="toggleLeftSidebar()">✕</button>
             </div>
 
             <nav class="nav-menu" id="main-nav">
@@ -112,8 +112,9 @@
         <!-- MAIN CONTENT -->
         <main class="main-content">
             <header class="top-bar">
-                <div class="header-left-stack" style="display:flex; align-items:center; gap:10px;">
-                    <!-- HAMBURGER MENU (Mobile Only) -->
+                <div class="header-left-stack" style="display:flex; align-items:center;">
+                    
+                    <!-- HAMBURGER MENU (Visible only on Mobile) -->
                     <button class="mobile-menu-toggle" onclick="toggleLeftSidebar()">
                         <i class="ph-bold ph-list"></i>
                     </button>

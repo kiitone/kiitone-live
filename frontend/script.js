@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function sendEmail(email, otp, callback) {
         const params = { to_email: email, otp: otp };
         // REPLACE WITH YOUR REAL IDS
-        emailjs.send("service_neje326", "YOUR_TEMPLATE_ID", params)
+        emailjs.send("service_neje326", "template_0pw8tol", params)
             .then(() => callback())
             .catch((err) => alert("Email Failed: " + JSON.stringify(err)));
     }
@@ -263,10 +263,12 @@ async function loadStudentCourses() {
     } catch (err) { console.error(err); }
 }
 
-// --- LEFT SIDEBAR TOGGLE (MOBILE) ---
+// --- LEFT SIDEBAR TOGGLE ---
 window.toggleLeftSidebar = function() {
     const sidebar = document.getElementById('left-sidebar');
-    if(sidebar) sidebar.classList.toggle('open');
+    if(sidebar) {
+        sidebar.classList.toggle('open');
+    }
 };
 
 // Auto-close sidebar when a link is clicked (Mobile UX)
