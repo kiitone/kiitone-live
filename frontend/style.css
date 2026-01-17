@@ -2159,29 +2159,74 @@ textarea:focus {
 .icon-box.blue { background: #3B82F6; }
 .icon-box.orange { background: #F97316; }
 
-/* 4. Responsive Fix for Mobile */
+/* 4. Mobile Layout (Stack, Toggles, & Alignment Fixes) */
 @media (max-width: 1024px) {
+    /* --- HEADER ALIGNMENT --- */
+    .top-bar {
+        padding: 10px 0;
+        width: 100%;
+    }
+    
+    .header-left-stack {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* Aligns Hamburger to far left */
+    }
+
+    .mobile-menu-toggle {
+        margin-right: 15px; /* Gap between Hamburger and Logo */
+        padding: 5px;
+    }
+
+    /* --- CONTENT ALIGNMENT --- */
+    .main-content {
+        padding: 15px; /* Proper spacing on phone edges */
+        width: 100%;
+        overflow-x: hidden; /* Prevents side scrolling */
+    }
+
     .hybrid-layout {
         display: flex;
         flex-direction: column;
+        width: 100%;
+        gap: 20px;
     }
-    
+
+    .community-feed {
+        width: 100% !important; /* Force full width on mobile */
+        flex: none !important;  /* Disable desktop flex ratio */
+    }
+
+    .card, .feed-item, .class-item {
+        width: 100%; /* Ensure cards stretch to edges */
+        box-sizing: border-box;
+    }
+
+    /* --- UTILITY STACK (Mobile Bottom Sheet) --- */
     .utility-stack {
-        display: none; /* Hidden by default on mobile */
+        display: none;
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
         height: auto;
+        max-height: 80vh;
         z-index: 2000;
+        background: white;
+        padding: 25px;
         border-radius: 20px 20px 0 0;
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        box-shadow: 0 -10px 50px rgba(0,0,0,0.3);
+        overflow-y: auto;
     }
     
     .utility-stack.open {
-        display: block;
+        display: flex;
+        flex-direction: column;
         animation: slideUp 0.3s ease;
     }
+    
+    .search-box { display: none; }
 }
 
 
