@@ -282,21 +282,24 @@ body {
 }
 
 .header-logo-img {
-    height: 50px;
+    height: 85px; /* Increased Size significantly */
     width: auto;
+    min-width: 200px; /* Forces it to be wider from left to right */
     object-fit: contain;
     background: white;
-    padding: 5px 10px;
-    border-radius: 8px;
+    padding: 12px 25px; /* More padding for that "Full" look */
+    border-radius: 14px;
     align-self: flex-start;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
 
 .welcome-text h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 2.2rem; /* Much Larger Text */
+    font-weight: 800; /* Extra Bold */
     color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    margin: 10px 0 0 0;
+    letter-spacing: -0.5px;
 }
 
 .header-right {
@@ -2163,15 +2166,23 @@ textarea:focus {
 @media (max-width: 1024px) {
     /* --- HEADER ALIGNMENT --- */
     .top-bar {
-        padding: 10px 0;
+        padding: 15px 0;
         width: 100%;
     }
     
     .header-left-stack {
         width: 100%;
         display: flex;
-        align-items: center;
-        justify-content: flex-start; /* Aligns Hamburger to far left */
+        flex-direction: column; /* Stack Logo on top of Welcome text for mobile */
+        align-items: flex-start; /* Align to far left */
+        gap: 10px;
+    }
+
+    .header-logo-img {
+        width: 100%; /* Spans from left to right on mobile */
+        max-width: 300px; /* Cap it so it doesn't get absurdly huge */
+        height: auto;
+        min-height: 60px;
     }
 
     .mobile-menu-toggle {
@@ -2179,28 +2190,38 @@ textarea:focus {
         padding: 5px;
     }
 
-    /* --- CONTENT ALIGNMENT --- */
+    /* --- CONTENT ALIGNMENT (FIXED) --- */
     .main-content {
-        padding: 15px; /* Proper spacing on phone edges */
+        padding: 15px 15px 80px 15px; /* Added bottom padding so content isn't covered by bottom nav/buttons */
         width: 100%;
-        overflow-x: hidden; /* Prevents side scrolling */
+        overflow-x: hidden;
     }
 
     .hybrid-layout {
         display: flex;
         flex-direction: column;
         width: 100%;
-        gap: 20px;
+        gap: 15px;
     }
 
     .community-feed {
-        width: 100% !important; /* Force full width on mobile */
-        flex: none !important;  /* Disable desktop flex ratio */
+        width: 100% !important;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
     }
 
+    /* Fix internal card alignment on mobile */
     .card, .feed-item, .class-item {
-        width: 100%; /* Ensure cards stretch to edges */
+        width: 100%;
         box-sizing: border-box;
+        margin: 0; /* Remove default margins that push it off screen */
+    }
+    
+    .class-item {
+        flex-direction: row; /* Keep row layout even on mobile */
+        align-items: center;
+        gap: 10px;
     }
 
     /* --- UTILITY STACK (Mobile Bottom Sheet) --- */

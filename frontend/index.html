@@ -112,15 +112,20 @@
         <!-- MAIN CONTENT -->
         <main class="main-content">
             <header class="top-bar">
-                <div class="header-left-stack" style="display:flex; align-items:center;">
+                <div class="header-left-stack" style="display: flex; align-items: center; gap: 15px;">
                     
-                    <!-- HAMBURGER MENU (Visible only on Mobile) -->
+                    <!-- HAMBURGER MENU (Mobile Only) -->
                     <button class="mobile-menu-toggle" onclick="toggleLeftSidebar()">
-                        <i class="ph-bold ph-list"></i>
+                        <i class="ph-bold ph-list" style="font-size: 1.8rem; color: white;"></i>
                     </button>
 
+                    <!-- LOGO IMAGE -->
                     <img src="images/header-logo.png" alt="Kalinga Institute" class="header-logo-img">
-                    <div class="welcome-text"><h1 id="welcome-msg">Welcome, KIITian 👋</h1></div>
+                    
+                    <!-- WELCOME TEXT -->
+                    <div class="welcome-text">
+                        <h1 id="welcome-msg">Welcome, KIITian 👋</h1>
+                    </div>
                 </div>
                 
                 <div class="header-right">
